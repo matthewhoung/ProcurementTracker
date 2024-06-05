@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Domain.Interfaces;
+using Infrastructure.Repositories;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Infrastructure
 
@@ -7,7 +9,8 @@ namespace Infrastructure
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services)
         {
-            //services.AddScoped<IApplicationService, ApplicationService>();
+            services.AddScoped<IFormRepository, FormRepository>();
+            
             return services;
         }
     }
