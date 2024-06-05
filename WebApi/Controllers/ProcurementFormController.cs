@@ -36,6 +36,13 @@ namespace WebApi.Controllers
             return Ok(formSignatureMemberId);
         }
 
+        [HttpPost("create/worker")]
+        public async Task<IActionResult> CreateFormWorker([FromBody] CreateFormWorkerCommand command)
+        {
+            var formWorkerId = await _mediator.Send(command);
+            return Ok(formWorkerId);
+        }
+
         [HttpGet("get/all")]
         public async Task<IActionResult> GetAllForms()
         {
@@ -66,6 +73,14 @@ namespace WebApi.Controllers
             var query = new GetFormSignatureMemberByFormIdQuery(formid);
             var formSignatureMembers = await _mediator.Send(query);
             return Ok(formSignatureMembers);
+        }
+
+        [HttpGet("get/{formid}/worker/list")]
+        public async Task<IActionResult> GetFormWorkerListByFormId(int formid)
+        {
+            var query = new GetFormWorkerByFormIdQuery(formid);
+            var formWorkers = await _mediator.Send(query);
+            return Ok(formWorkers);
         }
     }
 }

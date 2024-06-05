@@ -122,6 +122,31 @@ namespace Infrastructure.Repositories
             return signId;
         }
 
+        public async Task<int> CreateFormWorkerList(FormWorker formWorker)
+        {
+            var writeCommand = @"
+                    INSERT INTO forms_worker
+                    (
+                        form_id,
+                        worker_type_id,
+                        worker_team_id
+                    )
+                    VALUES
+                    (
+                        @FormId,
+                        @WorkerTypeId,
+                        @WorkerTeamId
+                    );
+                    SELECT LAST_INSERT_ID();";
+            var parameters = new
+            {
+                formWorker.FormId,
+                formWorker.WorkerTypeId,
+                formWorker.WorkerTeamId
+            };
+            var workerId = await _dbConnection.ExecuteScalarAsync<int>(writeCommand, parameters);
+            return workerId;
+        }
 
         // Read section
         public async Task<List<Form>> GetAllFormsAsync()
@@ -190,7 +215,6 @@ namespace Infrastructure.Repositories
             return formDetails.AsList();
         }
 
-
         public async Task<List<FormSignatureMember>> GetFormSignatureMembersByFormIdAsync(int formId)
         {
             var readCommand = @"
@@ -212,6 +236,31 @@ namespace Infrastructure.Repositories
             var parameters = new { FormId = formId };
             var formSignatureMembers = await _dbConnection.QueryAsync<FormSignatureMember>(readCommand, parameters);
             return formSignatureMembers.AsList();
+        }
+
+        public async Task<List<FormWorker>> GetFormWorkerListByFormIdAsync(int formId)
+        {
+            var readCommand = @"
+                    SELECT
+                        fw.worker_id AS WorkerId,
+                        f.id AS FormId,
+                        fw.worker_type_id AS WorkerTypeId,
+                        wt.worker_type_name AS WorkerTypeName,
+                        fw.worker_team_id AS WorkerTeamId,
+                        wtm.worker_team_name AS WorkerTeamName
+                    FROM
+                        forms f
+                    JOIN
+                        forms_worker fw ON f.id = fw.form_id
+                    JOIN
+                        worker_types wt ON fw.worker_type_id = wt.worker_type_id
+                    JOIN
+                        worker_teams wtm ON wt.worker_type_id = wtm.worker_type_id
+                    WHERE
+                        f.id = @FormId";
+            var parameters = new { FormId = formId };
+            var formWorkers = await _dbConnection.QueryAsync<FormWorker>(readCommand, parameters);
+            return formWorkers.AsList();
         }
 
     }
