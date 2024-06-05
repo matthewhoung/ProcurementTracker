@@ -23,6 +23,12 @@ namespace WebApi.Controllers
             var formId = await _mediator.Send(command);
             return Ok(formId);
         }
+        [HttpPost("create/detail")]
+        public async Task<IActionResult> CreateFormDetail([FromBody] CreateFormDetailCommand command)
+        {
+            var formDetailId = await _mediator.Send(command);
+            return Ok(formDetailId);
+        }
 
         [HttpGet("get/all")]
         public async Task<IActionResult> GetAllForms()
@@ -30,6 +36,22 @@ namespace WebApi.Controllers
             var query = new GetAllFormsQuery();
             var forms = await _mediator.Send(query);
             return Ok(forms);
+        }
+
+        [HttpGet("get/{formid}")]
+        public async Task<IActionResult> GetFormById(int formid)
+        {
+            var query = new GetFormByIdQuery(formid);
+            var form = await _mediator.Send(query);
+            return Ok(form);
+        }
+
+        [HttpGet("get/{formid}/details")]
+        public async Task<IActionResult> GetFormDetailsByFormId(int formid)
+        {
+            var query = new GetFormDetailsByFormIdQuery(formid);
+            var formDetails = await _mediator.Send(query);
+            return Ok(formDetails);
         }
     }
 }
