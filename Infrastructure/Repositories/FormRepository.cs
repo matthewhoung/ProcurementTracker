@@ -183,6 +183,32 @@ namespace Infrastructure.Repositories
             return payId;
         }
 
+        public async Task<int> CreateFormDepartment(FormDepartment formDepartment)
+        {
+            var writeCommand = @"
+                    INSERT INTO forms_department
+                    (
+                        form_id,
+                        department_id
+                    )
+                    VALUES
+                    (
+                        @FormId,
+                        @DepartmentId
+                    );
+                    SELECT LAST_INSERT_ID();";
+
+            var parameters = new
+            {
+                formDepartment.FormId,
+                formDepartment.DepartmentId
+            };
+
+            var departmentId = await _dbConnection.ExecuteScalarAsync<int>(writeCommand, parameters);
+            return departmentId;
+        }
+
+
         // Read section
         public async Task<List<Form>> GetAllFormsAsync()
         {
@@ -324,6 +350,27 @@ namespace Infrastructure.Repositories
             var parameters = new { FormId = formId };
             var formPayments = await _dbConnection.QueryAsync<FormPayment>(readCommand, parameters);
             return formPayments.AsList();
+        }
+
+        public async Task<List<FormDepartment>> GetFormDepartmentsByFormIdAsync(int formId)
+        {
+            var readCommand = @"
+                    SELECT
+                        fd.formdepartment_id AS FormDepartmentId,
+                        f.id AS FormId,
+                        fd.department_id AS DepartmentId,
+                        d.department_name AS DepartmentName
+                    FROM
+                        forms f
+                    JOIN
+                        forms_department fd ON f.id = fd.form_id
+                    JOIN
+                        departments d ON fd.department_id = d.department_id
+                    WHERE
+                        f.id = @FormId";
+            var parameters = new { FormId = formId };
+            var formDepartments = await _dbConnection.QueryAsync<FormDepartment>(readCommand, parameters);
+            return formDepartments.AsList();
         }
     }
 }
