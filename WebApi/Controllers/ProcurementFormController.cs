@@ -1,4 +1,5 @@
 ﻿using Application.Forms.Commands;
+using Application.Forms.Handlers.Queries;
 using Application.Forms.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -43,6 +44,13 @@ namespace WebApi.Controllers
             return Ok(formWorkerId);
         }
 
+        [HttpPost("create/payment")]
+        public async Task<IActionResult> CreateFormPayment([FromBody] CreateFormPaymentCommand command)
+        {
+            var formPaymentId = await _mediator.Send(command);
+            return Ok(formPaymentId);
+        }
+
         [HttpGet("get/all")]
         public async Task<IActionResult> GetAllForms()
         {
@@ -81,6 +89,14 @@ namespace WebApi.Controllers
             var query = new GetFormWorkerByFormIdQuery(formid);
             var formWorkers = await _mediator.Send(query);
             return Ok(formWorkers);
+        }
+
+        [HttpGet("get/{formid}/payment/info")]
+        public async Task<IActionResult> GetFormPaymentInfoByFormId(int formid)
+        {
+            var query = new GetFormPaymentByFormIdQuery(formid);
+            var formPaymentInfo = await _mediator.Send(query);
+            return Ok(formPaymentInfo);
         }
     }
 }

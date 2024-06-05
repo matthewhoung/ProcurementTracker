@@ -148,6 +148,41 @@ namespace Infrastructure.Repositories
             return workerId;
         }
 
+        public async Task<int> CreateFormPaymentInfo(FormPayment formPaymentInfo)
+        {
+            var writeCommand = @"
+                    INSERT INTO forms_payment
+                    (
+                        form_id,
+                        payment_total,
+                        payment_delta,
+                        payment_amount,
+                        payment_title_id,
+                        payment_tool_id
+                    )
+                    VALUES
+                    (
+                        @FormId,
+                        @PaymentTotal,
+                        @PaymentDelta,
+                        @PaymentAmount,
+                        @PaymentTitleId,
+                        @PaymentToolId
+                    );
+                    SELECT LAST_INSERT_ID();";
+            var parameters = new
+            {
+                formPaymentInfo.FormId,
+                formPaymentInfo.PaymentTotal,
+                formPaymentInfo.PaymentDelta,
+                formPaymentInfo.PaymentAmount,
+                formPaymentInfo.PaymentTitleId,
+                formPaymentInfo.PaymentToolId
+            };
+            var payId = await _dbConnection.ExecuteScalarAsync<int>(writeCommand, parameters);
+            return payId;
+        }
+
         // Read section
         public async Task<List<Form>> GetAllFormsAsync()
         {
@@ -263,5 +298,32 @@ namespace Infrastructure.Repositories
             return formWorkers.AsList();
         }
 
+        public async Task<List<FormPayment>> GetFormPaymentInfoByFormIdAsync(int formId)
+        {
+            var readCommand = @"
+                    SELECT
+                        fp.payment_id AS PaymentId,
+                        f.id AS FormId,
+                        fp.payment_total AS PaymentTotal,
+                        fp.payment_delta AS PaymentDelta,
+                        fp.payment_amount AS PaymentAmount,
+                        fp.payment_title_id AS PaymentTitleId,
+                        pt.pay_type_name AS PaymentTitle,
+                        fp.payment_tool_id AS PaymentToolId,
+                        pb.pay_by_name AS PaymentTool
+                    FROM
+                        forms f
+                    JOIN
+                        forms_payment fp ON f.id = fp.form_id
+                    JOIN
+                        pay_types pt ON fp.payment_title_id = pt.pay_type_id
+                    JOIN
+                        pay_by pb ON fp.payment_tool_id = pb.pay_by_id
+                    WHERE
+                        f.id = @FormId";
+            var parameters = new { FormId = formId };
+            var formPayments = await _dbConnection.QueryAsync<FormPayment>(readCommand, parameters);
+            return formPayments.AsList();
+        }
     }
 }

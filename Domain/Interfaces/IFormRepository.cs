@@ -9,11 +9,13 @@ namespace Domain.Interfaces
         Task<int> CreateFormDetailAsync(FormDetail formDetail);
         Task<int> CreateFormSignatureMemberAsync(FormSignatureMember formSignatureMember);
         Task<int> CreateFormWorkerList(FormWorker formWorker);
+        Task<int> CreateFormPaymentInfo(FormPayment formPaymentInfo);
         // Read section
         Task<List<Form>> GetAllFormsAsync();
         Task<Form> GetFormByIdAsync(int formId);
         Task<List<FormDetail>> GetFormDetailsByFormIdAsync(int formId);
         Task<List<FormSignatureMember>> GetFormSignatureMembersByFormIdAsync(int formId);
         Task<List<FormWorker>> GetFormWorkerListByFormIdAsync(int formId);
+        Task<List<FormPayment>> GetFormPaymentInfoByFormIdAsync(int formId);
     }
 }
