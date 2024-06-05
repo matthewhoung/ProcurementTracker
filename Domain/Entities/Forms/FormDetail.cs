@@ -9,6 +9,7 @@
         public int Quantity { get; set; }
         public int UnitPrice { get; set; }
         public int UnitId { get; set; }
+        public string UnitName { get; set; }
         public int Total { get; set; }
         public bool IsChecked { get; set; }
         public DateTime CreatedAt { get; set; }

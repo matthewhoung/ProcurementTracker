@@ -166,23 +166,30 @@ namespace Infrastructure.Repositories
         {
             var readCommand = @"
                     SELECT
-                        detail_id AS DetailId,
-                        form_id AS FormId,
-                        detail_title AS Title,
-                        detail_description AS Description,
-                        quantity AS Quantity,
-                        unit_price AS UnitPrice,
-                        unit_id AS UnitId,
-                        detail_total AS Total,
-                        is_check AS IsChecked
+                        fd.detail_id AS DetailId,
+                        fd.form_id AS FormId,
+                        fd.detail_title AS Title,
+                        fd.detail_description AS Description,
+                        fd.quantity AS Quantity,
+                        fd.unit_price AS UnitPrice,
+                        fd.unit_id AS UnitId,
+                        u.unit_name AS UnitName,
+                        fd.detail_total AS Total,
+                        fd.is_checked AS IsChecked,
+                        fd.created_at AS CreatedAt,
+                        fd.updated_at AS UpdatedAt
                     FROM
-                        forms_detail
+                        forms_detail fd
+                    JOIN
+                        units u ON fd.unit_id = u.unit_id
                     WHERE
-                        form_id = @FormId";
+                        fd.form_id = @FormId";
+
             var parameters = new { FormId = formId };
             var formDetails = await _dbConnection.QueryAsync<FormDetail>(readCommand, parameters);
             return formDetails.AsList();
         }
+
 
         public async Task<List<FormSignatureMember>> GetFormSignatureMembersByFormIdAsync(int formId)
         {
