@@ -93,6 +93,36 @@ namespace Infrastructure.Repositories
             return detailId;
         }
 
+        public async Task<int> CreateFormSignatureMemberAsync(FormSignatureMember formSignatureMember)
+        {
+            var writeCommand = @"
+                    INSERT INTO forms_signature
+                    (
+                        form_id,
+                        user_id,
+                        role_id,
+                        is_checked
+                    )
+                    VALUES
+                    (
+                        @FormId,
+                        @UserId,
+                        @RoleId,
+                        @IsChecked
+                    );
+                    SELECT LAST_INSERT_ID();";
+            var parameters = new
+            {
+                formSignatureMember.FormId,
+                formSignatureMember.UserId,
+                formSignatureMember.RoleId,
+                formSignatureMember.IsChecked
+            };
+            var signId = await _dbConnection.ExecuteScalarAsync<int>(writeCommand, parameters);
+            return signId;
+        }
+
+
         // Read section
         public async Task<List<Form>> GetAllFormsAsync()
         {
@@ -153,5 +183,29 @@ namespace Infrastructure.Repositories
             var formDetails = await _dbConnection.QueryAsync<FormDetail>(readCommand, parameters);
             return formDetails.AsList();
         }
+
+        public async Task<List<FormSignatureMember>> GetFormSignatureMembersByFormIdAsync(int formId)
+        {
+            var readCommand = @"
+                    SELECT
+                        fsm.sign_id AS SignId,
+                        f.id AS FormId,
+                        fsm.user_id AS UserId,
+                        r.role_id AS RoleId,
+                        r.role_name AS RoleName,
+                        fsm.is_checked AS IsChecked
+                    FROM
+                        forms f
+                    JOIN
+                        forms_signature fsm ON f.id = fsm.form_id
+                    JOIN
+                        roles r ON fsm.role_id = r.role_id
+                    WHERE
+                        f.id = @FormId";
+            var parameters = new { FormId = formId };
+            var formSignatureMembers = await _dbConnection.QueryAsync<FormSignatureMember>(readCommand, parameters);
+            return formSignatureMembers.AsList();
+        }
+
     }
 }

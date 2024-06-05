@@ -1,7 +1,6 @@
 ﻿using Application.Forms.Commands;
 using Application.Forms.Queries;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers
@@ -30,6 +29,13 @@ namespace WebApi.Controllers
             return Ok(formDetailId);
         }
 
+        [HttpPost("create/signature/member")]
+        public async Task<IActionResult> CreateFormSignatureMember([FromBody] CreateFormSignatureMemberCommand command)
+        {
+            var formSignatureMemberId = await _mediator.Send(command);
+            return Ok(formSignatureMemberId);
+        }
+
         [HttpGet("get/all")]
         public async Task<IActionResult> GetAllForms()
         {
@@ -52,6 +58,14 @@ namespace WebApi.Controllers
             var query = new GetFormDetailsByFormIdQuery(formid);
             var formDetails = await _mediator.Send(query);
             return Ok(formDetails);
+        }
+
+        [HttpGet("get/{formid}/signature/members")]
+        public async Task<IActionResult> GetFormSignatureMembersByFormId(int formid)
+        {
+            var query = new GetFormSignatureMemberByFormIdQuery(formid);
+            var formSignatureMembers = await _mediator.Send(query);
+            return Ok(formSignatureMembers);
         }
     }
 }
