@@ -24,10 +24,10 @@ namespace Application.Forms.Handlers.Queries
             if (form == null) return null;
 
             var details = await _formRepository.GetFormDetailsByFormIdAsync(request.FormId);
-            var signatures = await _formRepository.GetFormSignatureMembersByFormIdAsync(request.FormId);
-            var workers = await _formRepository.GetFormWorkerListByFormIdAsync(request.FormId);
             var payments = await _formRepository.GetFormPaymentInfoByFormIdAsync(request.FormId);
+            var workers = await _formRepository.GetFormWorkerListByFormIdAsync(request.FormId);
             var departments = await _formRepository.GetFormDepartmentsByFormIdAsync(request.FormId);
+            var signatures = await _formRepository.GetFormSignatureMembersByFormIdAsync(request.FormId);
             var filePaths = await _fileUploaderRepository.GetFilePathAsync(request.FormId);
 
             var formInfoDto = new FormInfoDto
