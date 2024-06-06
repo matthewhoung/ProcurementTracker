@@ -1,5 +1,5 @@
-﻿using Application.Uploaders.Commands;
-using Application.Uploaders.Queries;
+﻿using Application.Uploaders.Handlers.Commands;
+using Application.Uploaders.Handlers.Queries;
 using Domain.Entities.Commons.FileUploader;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
