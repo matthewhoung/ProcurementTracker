@@ -11,6 +11,10 @@ namespace Domain.Interfaces
         Task<int> CreateFormWorkerList(FormWorker formWorker);
         Task<int> CreateFormPaymentInfo(FormPayment formPaymentInfo);
         Task<int> CreateFormDepartment(FormDepartment formDepartment);
+        Task<int> CreateOrderFormAsync(int fromId);
+        Task<int> CreateReceiveFormAsync(int fromId);
+        Task<int> CreatePayableFormAsync(int fromId);
+        
         // Read section
         Task<List<Form>> GetAllFormsAsync();
         Task<Form> GetFormByIdAsync(int formId);
@@ -19,13 +23,15 @@ namespace Domain.Interfaces
         Task<List<FormWorker>> GetFormWorkerListByFormIdAsync(int formId);
         Task<List<FormPayment>> GetFormPaymentInfoByFormIdAsync(int formId);
         Task<List<FormDepartment>> GetFormDepartmentsByFormIdAsync(int formId);
+        Task<FormSignatureMember> GetFormSignatureMemberAsync(int formId, int userId);
+        Task<bool> GetAllSignaturesCheckedAsync(int formId, string stage);
 
-        // New methods to be added to handler
-        Task<int> CreateOrderFormAsync(int fromId);
-        Task<int> CreateReceiveFormAsync(int fromId);
-        Task<int> CreatePayableFormAsync(int fromId);
+        // Update section
         Task UpdateSignatureAsync(FormSignatureMember formSignatureMemeber);
         Task UpdateDetailAsync(FormDetail formDetail);
+
+        // Delete section
         Task DeleteFormAsync(int formId);
+        
     }
 }

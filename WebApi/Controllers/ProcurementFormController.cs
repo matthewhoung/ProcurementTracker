@@ -1,5 +1,6 @@
 ﻿using Application.Forms.Handlers.Commands;
 using Application.Forms.Handlers.Queries;
+using Domain.Entities.Forms;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,6 +23,27 @@ namespace WebApi.Controllers
             var formId = await _mediator.Send(command);
             return Ok(formId);
         }
+        [HttpPost("create/orderform")]
+        public async Task<IActionResult> CreateOrderForm([FromBody] CreateOrderFormCommand command)
+        {
+            var formId = await _mediator.Send(command);
+            return Ok(formId);
+        }
+
+        [HttpPost("create/receiveform")]
+        public async Task<IActionResult> CreateReceiveForm([FromBody] CreateReceiveFormCommand command)
+        {
+            var formId = await _mediator.Send(command);
+            return Ok(formId);
+        }
+
+        [HttpPost("create/payableform")]
+        public async Task<IActionResult> CreatePayableForm([FromBody] CreatePayableFormCommand command)
+        {
+            var formId = await _mediator.Send(command);
+            return Ok(formId);
+        }
+
         [HttpPost("create/detail")]
         public async Task<IActionResult> CreateFormDetail([FromBody] CreateFormDetailCommand command)
         {
@@ -111,6 +133,30 @@ namespace WebApi.Controllers
             var query = new GetFormDepartmentByFormIdQuery(formid);
             var formDepartments = await _mediator.Send(query);
             return Ok(formDepartments);
+        }
+
+        [HttpPut("update/signature")]
+        public async Task<IActionResult> UpdateSignature(int formId, int userId)
+        {
+            var command = new UpdateSignatureCommand(formId, userId);
+            await _mediator.Send(command);
+            return Ok();
+        }
+
+        [HttpPut("update/detail")]
+        public async Task<IActionResult> UpdateDetail([FromBody] FormDetail formDetail)
+        {
+            var command = new UpdateDetailCommand { FormDetail = formDetail };
+            await _mediator.Send(command);
+            return Ok();
+        }
+
+        [HttpDelete("delete/{formid}")]
+        public async Task<IActionResult> DeleteForm(int formid)
+        {
+            var command = new DeleteFormCommand(formid);
+            await _mediator.Send(command);
+            return Ok();
         }
     }
 }
