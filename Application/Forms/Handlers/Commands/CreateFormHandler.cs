@@ -1,10 +1,15 @@
-﻿using Application.Forms.Commands;
-using Domain.Entities.Forms;
+﻿using Domain.Entities.Forms;
 using Domain.Interfaces;
 using MediatR;
 
 namespace Application.Forms.Handlers.Commands
 {
+    public class CreateFormCommand : IRequest<int>
+    {
+        public int ProjectId { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
+    }
     public class CreateFormHandler : IRequestHandler<CreateFormCommand, int>
     {
         private readonly IFormRepository _formRepository;
@@ -21,7 +26,7 @@ namespace Application.Forms.Handlers.Commands
                 ProjectId = request.ProjectId,
                 Title = request.Title,
                 Description = request.Description,
-                Stage = "採購單",
+                Stage = "OrderForm",
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };

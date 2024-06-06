@@ -1,12 +1,18 @@
 ﻿using Application.DTOs;
-using Application.Forms.Queries;
 using Domain.Interfaces;
 using MediatR;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Application.Forms.Handlers.Queries
 {
+    public class GetFormByIdQuery : IRequest<FormInfoDto>
+    {
+        public int FormId { get; set; }
+
+        public GetFormByIdQuery(int formId)
+        {
+            FormId = formId;
+        }
+    }
     public class GetFormByIdHandler : IRequestHandler<GetFormByIdQuery, FormInfoDto>
     {
         private readonly IFormRepository _formRepository;

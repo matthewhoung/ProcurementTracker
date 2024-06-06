@@ -7,7 +7,7 @@ namespace Domain.Interfaces
         // Create section
         Task<int> CreateFormAsync(Form form);
         Task<int> CreateFormDetailAsync(FormDetail formDetail);
-        Task<int> CreateFormSignatureMemberAsync(FormSignatureMember formSignatureMember);
+        Task<int> CreateFormSignatureMemberAsync(FormSignatureMember formSignatureMember, string stage);
         Task<int> CreateFormWorkerList(FormWorker formWorker);
         Task<int> CreateFormPaymentInfo(FormPayment formPaymentInfo);
         Task<int> CreateFormDepartment(FormDepartment formDepartment);
@@ -19,5 +19,6 @@ namespace Domain.Interfaces
         Task<List<FormWorker>> GetFormWorkerListByFormIdAsync(int formId);
         Task<List<FormPayment>> GetFormPaymentInfoByFormIdAsync(int formId);
         Task<List<FormDepartment>> GetFormDepartmentsByFormIdAsync(int formId);
+        Task<string> GetFormStageAsync(int formId);
     }
 }

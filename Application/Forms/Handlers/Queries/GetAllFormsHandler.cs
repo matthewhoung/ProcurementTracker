@@ -1,10 +1,12 @@
-﻿using Application.Forms.Queries;
-using Domain.Entities.Forms;
+﻿using Domain.Entities.Forms;
 using Domain.Interfaces;
 using MediatR;
 
 namespace Application.Forms.Handlers.Queries
 {
+    public class GetAllFormsQuery : IRequest<List<Form>>
+    {
+    }
     public class GetAllFormsHandler : IRequestHandler<GetAllFormsQuery, List<Form>>
     {
         private readonly IFormRepository _formRepository;

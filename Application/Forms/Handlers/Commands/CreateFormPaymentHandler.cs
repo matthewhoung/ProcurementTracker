@@ -1,10 +1,15 @@
-﻿using Application.Forms.Commands;
-using Domain.Entities.Forms;
+﻿using Domain.Entities.Forms;
 using Domain.Interfaces;
 using MediatR;
 
 namespace Application.Forms.Handlers.Commands
 {
+    public class CreateFormPaymentCommand : IRequest<int>
+    {
+        public int FormId { get; set; }
+        public int PaymentTitleId { get; set; }
+        public int PaymentToolId { get; set; }
+    }
     public class CreateFormPaymentHandler : IRequestHandler<CreateFormPaymentCommand, int>
     {
         private readonly IFormRepository _formRepository;

@@ -1,10 +1,14 @@
-﻿using Application.Forms.Commands;
-using Domain.Entities.Forms;
+﻿using Domain.Entities.Forms;
 using Domain.Interfaces;
 using MediatR;
 
 namespace Application.Forms.Handlers.Commands
 {
+    public class CreateFormDepartmentCommand : IRequest<int>
+    {
+        public int FormId { get; set; }
+        public int DepartmentId { get; set; }
+    }
     public class CreateFormDepartmentHandler : IRequestHandler<CreateFormDepartmentCommand, int>
     {
         private readonly IFormRepository _formRepository;

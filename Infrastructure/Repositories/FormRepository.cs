@@ -63,12 +63,12 @@ namespace Infrastructure.Repositories
                         unit_price,
                         unit_id,
                         detail_total,
-                        is_check
+                        is_checked
                     )
                     VALUES
                     (
                         @FormId,
-                        @Name,
+                        @Title,
                         @Description,
                         @Quantity,
                         @UnitPrice,
@@ -93,10 +93,18 @@ namespace Infrastructure.Repositories
             return detailId;
         }
 
-        public async Task<int> CreateFormSignatureMemberAsync(FormSignatureMember formSignatureMember)
+        public async Task<int> CreateFormSignatureMemberAsync(FormSignatureMember formSignatureMember,string stage)
         {
-            var writeCommand = @"
-                    INSERT INTO forms_signature
+            var table = stage switch
+            {
+                "order" => "order_signatures",
+                "receive" => "receive_signatures",
+                "payable" => "payable_signatures",
+                _ => throw new ArgumentException("Invalid stage")
+            };
+
+            var writeCommand = $@"
+                    INSERT INTO {table}
                     (
                         form_id,
                         user_id,
@@ -371,6 +379,20 @@ namespace Infrastructure.Repositories
             var parameters = new { FormId = formId };
             var formDepartments = await _dbConnection.QueryAsync<FormDepartment>(readCommand, parameters);
             return formDepartments.AsList();
+        }
+
+        public async Task<string> GetFormStageAsync(int formId)
+        {
+            var readCommand = @"
+                    SELECT
+                        stage
+                    FROM
+                        forms
+                    WHERE
+                        id = @FormId";
+            var parameters = new { FormId = formId };
+            var stage = await _dbConnection.QueryFirstOrDefaultAsync<string>(readCommand, parameters);
+            return stage;
         }
     }
 }

@@ -1,10 +1,18 @@
-﻿using Application.Forms.Queries;
-using Domain.Entities.Forms;
+﻿using Domain.Entities.Forms;
 using Domain.Interfaces;
 using MediatR;
 
 namespace Application.Forms.Handlers.Queries
 {
+    public class GetFormWorkerByFormIdQuery : IRequest<List<FormWorker>>
+    {
+        public int FormId { get; set; }
+
+        public GetFormWorkerByFormIdQuery(int formId)
+        {
+            FormId = formId;
+        }
+    }
     public class GetFormWorkerByFormIdHandler : IRequestHandler<GetFormWorkerByFormIdQuery, List<FormWorker>>
     {
         private readonly IFormRepository _formRepository;

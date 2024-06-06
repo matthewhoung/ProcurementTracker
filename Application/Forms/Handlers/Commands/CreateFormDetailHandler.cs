@@ -1,10 +1,18 @@
-﻿using Application.Forms.Commands;
-using Domain.Entities.Forms;
+﻿using Domain.Entities.Forms;
 using Domain.Interfaces;
 using MediatR;
 
 namespace Application.Forms.Handlers.Commands
 {
+    public class CreateFormDetailCommand : IRequest<int>
+    {
+        public int FormId { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public int Quantity { get; set; }
+        public int UnitPrice { get; set; }
+        public int UnitId { get; set; }
+    }
     public class CreateFormDetailHandler : IRequestHandler<CreateFormDetailCommand, int>
     {
         private readonly IFormRepository _formRepository;
@@ -19,7 +27,7 @@ namespace Application.Forms.Handlers.Commands
             var formDetail = new FormDetail
             {
                 FormId = request.FormId,
-                Title = request.Name,
+                Title = request.Title,
                 Description = request.Description,
                 Quantity = request.Quantity,
                 UnitPrice = request.UnitPrice,
