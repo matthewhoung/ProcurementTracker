@@ -30,10 +30,11 @@ namespace Application.Forms.Handlers.Commands
                 FormId = request.FormId,
                 UserId = request.UserId,
                 RoleId = request.RoleId,
+                Stage = request.Stage,
                 IsChecked = request.IsChecked
             };
 
-            var signId = await _formRepository.CreateFormSignatureMemberAsync(formSignatureMember, request.Stage);
+            var signId = await _formRepository.CreateFormSignatureMemberAsync(formSignatureMember);
             return signId;
         }
     }
