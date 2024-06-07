@@ -160,7 +160,13 @@ namespace Infrastructure.Repositories
         }
         public async Task<int> CreateFormSignatureMemberAsync(FormSignatureMember formSignatureMember)
         {
-            var table = await GetFormStageAsync(formSignatureMember.FormId);
+            var table = formSignatureMember.Stage switch
+            {
+                "OrderForm" => "order_signatures",
+                "ReceiveForm" => "receive_signatures",
+                "PayableForm" => "payable_signatures",
+                _ => throw new ArgumentException("Invalid stage")
+            };
 
             var writeCommand = $@"
                     INSERT INTO {table}

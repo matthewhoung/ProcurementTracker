@@ -1,8 +1,7 @@
-﻿using Domain.Interfaces;
+﻿using Domain.Entities.Forms;
+using Domain.Interfaces;
 using FluentValidation;
 using MediatR;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Application.Forms.Handlers.Commands
 {
@@ -58,15 +57,34 @@ namespace Application.Forms.Handlers.Commands
                 {
                     await _formRepository.CreateReceiveFormAsync(request.FormId);
                     await _formRepository.UpdateFormStageAsync(request.FormId, "ReceiveForm");
+                    await CreateSignaturesForNextStage(request.FormId, "ReceiveForm", formSignatureMembers);
                 }
                 else if (formSignatureMember.Stage == "ReceiveForm")
                 {
                     await _formRepository.CreatePayableFormAsync(request.FormId);
                     await _formRepository.UpdateFormStageAsync(request.FormId, "PayableForm");
+                    await CreateSignaturesForNextStage(request.FormId, "PayableForm", formSignatureMembers);
                 }
             }
 
             return Unit.Value;
+        }
+
+        private async Task CreateSignaturesForNextStage(int formId, string newStage, List<FormSignatureMember> currentSignatures)
+        {
+            foreach (var signature in currentSignatures)
+            {
+                var newSignature = new FormSignatureMember
+                {
+                    FormId = formId,
+                    UserId = signature.UserId,
+                    RoleId = signature.RoleId,
+                    Stage = newStage,
+                    IsChecked = false
+                };
+
+                await _formRepository.CreateFormSignatureMemberAsync(newSignature);
+            }
         }
     }
 }
