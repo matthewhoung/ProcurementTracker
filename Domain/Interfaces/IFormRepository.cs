@@ -11,9 +11,10 @@ namespace Domain.Interfaces
         Task<int> CreateFormWorkerList(FormWorker formWorker);
         Task<int> CreateFormPaymentInfo(FormPayment formPaymentInfo);
         Task<int> CreateFormDepartment(FormDepartment formDepartment);
-        Task<int> CreateOrderFormAsync(int fromId);
-        Task<int> CreateReceiveFormAsync(int fromId);
-        Task<int> CreatePayableFormAsync(int fromId);
+        Task<int> CreateOrderFormAsync(int formId);
+        Task<int> CreateReceiveFormAsync(int formId);
+        Task<int> CreatePayableFormAsync(int formId);
+        Task<int> CreateAffiliateFormAsync(int formId, int affiliateFormId);
         
         // Read section
         Task<List<Form>> GetAllFormsAsync();
@@ -36,5 +37,13 @@ namespace Domain.Interfaces
 
         // Delete section
         Task DeleteFormAsync(int formId);
+
+        // New Section
+        Task UpdateFormDetailisCheckAsync(int formId, int detailId);
+        Task UpdatePaymentAmountAsync(int formId);
+        Task UpdatePaymentAsync(int formId, int paymentDelta, int deltaTitleId, int paymentTitleId, int paymentToolId, int paymentAmount, int paymentTotal);
+        Task<List<int>> GetAffiliateFormIdsAsync(int formId);
+        Task<int> GetFormDetailSumTotalAsync(int formId);
+        Task<int> GetPaymentAmountAsync(int formId);
     }
 }

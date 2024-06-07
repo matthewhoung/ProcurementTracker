@@ -83,6 +83,12 @@ namespace WebApi.Controllers
             return Ok(formDepartmentId);
         }
 
+        [HttpPost("create/affiliate")]
+        public async Task<IActionResult> CreateAffiliateForm([FromBody] CreateAffiliateFormCommand command)
+        {
+            var affiliateId = await _mediator.Send(command);
+            return Ok(affiliateId);
+        }
         /*
          * Read section
          */
@@ -184,6 +190,14 @@ namespace WebApi.Controllers
         {
             var command = new UpdateDetailCommand { FormDetail = formDetail };
             await _mediator.Send(command);
+            return Ok();
+        }
+        [HttpPut("update/payment")]
+        public async Task<IActionResult> UpdatePaymentCalculations([FromBody] FormPayment formPayment)
+        {
+            var command = new UpdatePaymentCalculationsCommand(formPayment);
+            await _mediator.Send(command);
+
             return Ok();
         }
 

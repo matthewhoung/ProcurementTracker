@@ -19,25 +19,25 @@ namespace Infrastructure.Repositories
         public async Task<int> CreateFormAsync(Form form)
         {
             var writeCommand = @"
-                    INSERT INTO forms
-                    (
-                        project_id,
-                        title,
-                        description,
-                        stage,
-                        created_at,
-                        updated_at
-                    )
-                    VALUES
-                    (
-                        @ProjectId,
-                        @Title,
-                        @Description,
-                        @Stage,
-                        @CreatedAt,
-                        @UpdatedAt
-                    );
-                    SELECT LAST_INSERT_ID();";
+                INSERT INTO forms
+                (
+                    project_id,
+                    title,
+                    description,
+                    stage,
+                    created_at,
+                    updated_at
+                )
+                VALUES
+                (
+                    @ProjectId,
+                    @Title,
+                    @Description,
+                    @Stage,
+                    @CreatedAt,
+                    @UpdatedAt
+                );
+                SELECT LAST_INSERT_ID();";
             var parameters = new
             {
                 form.ProjectId,
@@ -55,17 +55,17 @@ namespace Infrastructure.Repositories
         public async Task<int> CreateOrderFormAsync(int formId)
         {
             var writeCommand = @"
-                    INSERT INTO forms_orderform
-                    (
-                        form_id,
-                        status
-                    )
-                    VALUES
-                    (
-                        @FormId,
-                        'pending'
-                    );
-                    SELECT LAST_INSERT_ID();";
+                INSERT INTO forms_orderform
+                (
+                    form_id,
+                    status
+                )
+                VALUES
+                (
+                    @FormId,
+                    'pending'
+                );
+                SELECT LAST_INSERT_ID();";
             var parameters = new
             {
                 FormId = formId
@@ -77,17 +77,17 @@ namespace Infrastructure.Repositories
         public async Task<int> CreateReceiveFormAsync(int formId)
         {
             var writeCommand = @"
-                    INSERT INTO forms_receiveform
-                    (
-                        form_id,
-                        status
-                    )
-                    VALUES
-                    (
-                        @FormId,
-                        'pending'                        
-                    );
-                    SELECT LAST_INSERT_ID();";
+                INSERT INTO forms_receiveform
+                (
+                    form_id,
+                    status
+                )
+                VALUES
+                (
+                    @FormId,
+                    'pending'                        
+                );
+                SELECT LAST_INSERT_ID();";
             var parameters = new
             {
                 FormId = formId
@@ -99,17 +99,17 @@ namespace Infrastructure.Repositories
         public async Task<int> CreatePayableFormAsync(int formId)
         {
             var writeCommand = @"
-                    INSERT INTO forms_payableform
-                    (
-                        form_id,
-                        status
-                    )
-                    VALUES
-                    (
-                        @FormId
-                        'pending'
-                    );
-                    SELECT LAST_INSERT_ID();";
+                INSERT INTO forms_payableform
+                (
+                    form_id,
+                    status
+                )
+                VALUES
+                (
+                    @FormId
+                    'pending'
+                );
+                SELECT LAST_INSERT_ID();";
             var parameters = new
             {
                 FormId = formId
@@ -121,29 +121,29 @@ namespace Infrastructure.Repositories
         public async Task<int> CreateFormDetailAsync(FormDetail formDetail)
         {
             var writeCommand = @"
-                    INSERT INTO forms_detail
-                    (
-                        form_id,
-                        detail_title,
-                        detail_description,
-                        quantity,
-                        unit_price,
-                        unit_id,
-                        detail_total,
-                        is_checked
-                    )
-                    VALUES
-                    (
-                        @FormId,
-                        @Title,
-                        @Description,
-                        @Quantity,
-                        @UnitPrice,
-                        @UnitId,
-                        @Total,
-                        @IsChecked
-                    );
-                    SELECT LAST_INSERT_ID();";
+                INSERT INTO forms_detail
+                (
+                    form_id,
+                    detail_title,
+                    detail_description,
+                    quantity,
+                    unit_price,
+                    unit_id,
+                    detail_total,
+                    is_checked
+                )
+                VALUES
+                (
+                    @FormId,
+                    @Title,
+                    @Description,
+                    @Quantity,
+                    @UnitPrice,
+                    @UnitId,
+                    @Total,
+                    @IsChecked
+                );
+                SELECT LAST_INSERT_ID();";
             var details = new
             {
                 formDetail.FormId,
@@ -170,21 +170,21 @@ namespace Infrastructure.Repositories
             };
 
             var writeCommand = $@"
-                    INSERT INTO {table}
-                    (
-                        form_id,
-                        user_id,
-                        role_id,
-                        is_checked
-                    )
-                    VALUES
-                    (
-                        @FormId,
-                        @UserId,
-                        @RoleId,
-                        @IsChecked
-                    );
-                    SELECT LAST_INSERT_ID();";
+                INSERT INTO {table}
+                (
+                    form_id,
+                    user_id,
+                    role_id,
+                    is_checked
+                )
+                VALUES
+                (
+                    @FormId,
+                    @UserId,
+                    @RoleId,
+                    @IsChecked
+                );
+                SELECT LAST_INSERT_ID();";
             var parameters = new
             {
                 FormId = formSignatureMember.FormId,
@@ -198,19 +198,19 @@ namespace Infrastructure.Repositories
         public async Task<int> CreateFormWorkerList(FormWorker formWorker)
         {
             var writeCommand = @"
-                    INSERT INTO forms_worker
-                    (
-                        form_id,
-                        worker_type_id,
-                        worker_team_id
-                    )
-                    VALUES
-                    (
-                        @FormId,
-                        @WorkerTypeId,
-                        @WorkerTeamId
-                    );
-                    SELECT LAST_INSERT_ID();";
+                INSERT INTO forms_worker
+                (
+                    form_id,
+                    worker_type_id,
+                    worker_team_id
+                )
+                VALUES
+                (
+                    @FormId,
+                    @WorkerTypeId,
+                    @WorkerTeamId
+                );
+                SELECT LAST_INSERT_ID();";
             var parameters = new
             {
                 formWorker.FormId,
@@ -223,25 +223,27 @@ namespace Infrastructure.Repositories
         public async Task<int> CreateFormPaymentInfo(FormPayment formPaymentInfo)
         {
             var writeCommand = @"
-                    INSERT INTO forms_payment
-                    (
-                        form_id,
-                        payment_total,
-                        payment_delta,
-                        payment_amount,
-                        payment_title_id,
-                        payment_tool_id
-                    )
-                    VALUES
-                    (
-                        @FormId,
-                        @PaymentTotal,
-                        @PaymentDelta,
-                        @PaymentAmount,
-                        @PaymentTitleId,
-                        @PaymentToolId
-                    );
-                    SELECT LAST_INSERT_ID();";
+                INSERT INTO forms_payment
+                (
+                    form_id,
+                    payment_total,
+                    payment_delta,
+                    delta_title_id,
+                    payment_amount,
+                    payment_title_id,
+                    payment_tool_id
+                )
+                VALUES
+                (
+                    @FormId,
+                    @PaymentTotal,
+                    @PaymentDelta,
+                    @DeltaTitleId,
+                    @PaymentAmount,
+                    @PaymentTitleId,
+                    @PaymentToolId
+                );
+                SELECT LAST_INSERT_ID();";
             var parameters = new
             {
                 formPaymentInfo.FormId,
@@ -257,17 +259,17 @@ namespace Infrastructure.Repositories
         public async Task<int> CreateFormDepartment(FormDepartment formDepartment)
         {
             var writeCommand = @"
-                    INSERT INTO forms_department
-                    (
-                        form_id,
-                        department_id
-                    )
-                    VALUES
-                    (
-                        @FormId,
-                        @DepartmentId
-                    );
-                    SELECT LAST_INSERT_ID();";
+                INSERT INTO forms_department
+                (
+                    form_id,
+                    department_id
+                )
+                VALUES
+                (
+                    @FormId,
+                    @DepartmentId
+                );
+                SELECT LAST_INSERT_ID();";
 
             var parameters = new
             {
@@ -278,54 +280,89 @@ namespace Infrastructure.Repositories
             var departmentId = await _dbConnection.ExecuteScalarAsync<int>(writeCommand, parameters);
             return departmentId;
         }
+        public async Task<int> CreateAffiliateFormAsync(int formId, int affiliateFormId)
+        {
+            var writeCommand = @"
+                INSERT INTO forms_affiliateform
+                (
+                    form_id,
+                    affiliate_form_id
+                )
+                VALUES
+                (
+                    @FormId,
+                    @AffiliateFormId
+                );
+                SELECT LAST_INSERT_ID();";
+            var parameters = new
+            {
+                FormId = formId,
+                AffiliateFormId = affiliateFormId
+            };
+
+            var affiliateId = await _dbConnection.ExecuteScalarAsync<int>(writeCommand, parameters);
+            return affiliateId;
+        }
 
         // Read section
 
         public async Task<List<Form>> GetAllFormsAsync()
         {
             var readCommand = @"
-                    SELECT
-                        id AS Id,
-                        project_id AS ProjectId,
-                        title AS Title,
-                        description AS Description,
-                        stage AS Stage,
-                        created_at AS CreatedAt,
-                        updated_at AS UpdatedAt
-                    FROM
-                        forms";
-
+                SELECT
+                    id AS Id,
+                    project_id AS ProjectId,
+                    title AS Title,
+                    description AS Description,
+                    stage AS Stage,
+                    created_at AS CreatedAt,
+                    updated_at AS UpdatedAt
+                FROM
+                    forms";
             var forms = await _dbConnection.QueryAsync<Form>(readCommand);
             return forms.AsList();
         }
         public async Task<Form> GetFormByIdAsync(int formId)
         {
             var readCommand = @"
-                    SELECT
-                        id AS Id,
-                        project_id AS ProjectId,
-                        title AS Title,
-                        description AS Description,
-                        stage AS Stage,
-                        created_at AS CreatedAt,
-                        updated_at AS UpdatedAt
-                    FROM
-                        forms
-                    WHERE
-                        id = @FormId";
+                SELECT
+                    id AS Id,
+                    project_id AS ProjectId,
+                    title AS Title,
+                    description AS Description,
+                    stage AS Stage,
+                    created_at AS CreatedAt,
+                    updated_at AS UpdatedAt
+                FROM
+                    forms
+                WHERE
+                    id = @FormId";
             var parameters = new { FormId = formId };
             var form = await _dbConnection.QueryFirstOrDefaultAsync<Form>(readCommand, parameters);
             return form;
         }
+        public async Task<List<int>> GetAffiliateFormIdsAsync(int formId)
+        {
+            var readCommand = @"
+                SELECT
+                    form_affiliate_id
+                FROM
+                    forms_affiliate
+                WHERE
+                    form_id = @FormId";
+            var parameters = new { FormId = formId };
+            var affiliateFormIds = await _dbConnection.QueryAsync<int>(readCommand, parameters);
+            return affiliateFormIds.AsList();
+        }
         public async Task<string> GetFormStageAsync(int formId)
         {
             var readCommand = @"
-                    SELECT
-                        stage
-                    FROM
-                        forms
-                    WHERE
-                        id = @FormId";
+                SELECT
+                    stage
+                FROM
+                    forms
+                WHERE
+                    id = @FormId";
             var parameters = new { FormId = formId };
             var stage = await _dbConnection.QuerySingleOrDefaultAsync<string>(readCommand, parameters);
             
@@ -341,29 +378,41 @@ namespace Infrastructure.Repositories
         public async Task<List<FormDetail>> GetFormDetailsByFormIdAsync(int formId)
         {
             var readCommand = @"
-                    SELECT
-                        fd.detail_id AS DetailId,
-                        fd.form_id AS FormId,
-                        fd.detail_title AS Title,
-                        fd.detail_description AS Description,
-                        fd.quantity AS Quantity,
-                        fd.unit_price AS UnitPrice,
-                        fd.unit_id AS UnitId,
-                        u.unit_name AS UnitName,
-                        fd.detail_total AS Total,
-                        fd.is_checked AS IsChecked,
-                        fd.created_at AS CreatedAt,
-                        fd.updated_at AS UpdatedAt
-                    FROM
-                        forms_detail fd
-                    JOIN
-                        units u ON fd.unit_id = u.unit_id
-                    WHERE
-                        fd.form_id = @FormId";
-
+                SELECT
+                    fd.detail_id AS DetailId,
+                    fd.form_id AS FormId,
+                    fd.detail_title AS Title,
+                    fd.detail_description AS Description,
+                    fd.quantity AS Quantity,
+                    fd.unit_price AS UnitPrice,
+                    fd.unit_id AS UnitId,
+                    u.unit_name AS UnitName,
+                    fd.detail_total AS Total,
+                    fd.is_checked AS IsChecked,
+                    fd.created_at AS CreatedAt,
+                    fd.updated_at AS UpdatedAt
+                FROM
+                    forms_detail fd
+                JOIN
+                    units u ON fd.unit_id = u.unit_id
+                WHERE
+                    fd.form_id = @FormId";
             var parameters = new { FormId = formId };
             var formDetails = await _dbConnection.QueryAsync<FormDetail>(readCommand, parameters);
             return formDetails.AsList();
+        }
+        public async Task<int> GetFormDetailSumTotalAsync(int formId)
+        {
+            var readCommand = @"
+                SELECT
+                    SUM(detail_total)
+                FROM
+                    forms_detail
+                WHERE
+                    form_id = @FormId";
+            var parameters = new { FormId = formId };
+            var total = await _dbConnection.ExecuteScalarAsync<int>(readCommand, parameters);
+            return total;
         }
         public async Task<List<FormWorker>> GetFormWorkerListByFormIdAsync(int formId)
         {
@@ -392,29 +441,46 @@ namespace Infrastructure.Repositories
         public async Task<List<FormPayment>> GetFormPaymentInfoByFormIdAsync(int formId)
         {
             var readCommand = @"
-                    SELECT
-                        fp.payment_id AS PaymentId,
-                        f.id AS FormId,
-                        fp.payment_total AS PaymentTotal,
-                        fp.payment_delta AS PaymentDelta,
-                        fp.payment_amount AS PaymentAmount,
-                        fp.payment_title_id AS PaymentTitleId,
-                        pt.pay_type_name AS PaymentTitle,
-                        fp.payment_tool_id AS PaymentToolId,
-                        pb.pay_by_name AS PaymentTool
-                    FROM
-                        forms f
-                    JOIN
-                        forms_payment fp ON f.id = fp.form_id
-                    JOIN
-                        pay_types pt ON fp.payment_title_id = pt.pay_type_id
-                    JOIN
-                        pay_by pb ON fp.payment_tool_id = pb.pay_by_id
-                    WHERE
-                        f.id = @FormId";
+            SELECT
+                fp.payment_id AS PaymentId,
+                f.id AS FormId,
+                fp.payment_total AS PaymentTotal,
+                fp.payment_delta AS PaymentDelta,
+                fp.delta_title_id AS DeltaTitleId,
+                pt1.pay_type_name AS DeltaTitle,
+                fp.payment_amount AS PaymentAmount,
+                fp.payment_title_id AS PaymentTitleId,
+                pt2.pay_type_name AS PaymentTitle,
+                fp.payment_tool_id AS PaymentToolId,
+                pb.pay_by_name AS PaymentTool
+            FROM
+                forms f
+            JOIN
+                forms_payment fp ON f.id = fp.form_id
+            JOIN
+                pay_types pt1 ON fp.delta_title_id = pt1.pay_type_id
+            JOIN
+                pay_types pt2 ON fp.payment_title_id = pt2.pay_type_id
+            JOIN
+                pay_by pb ON fp.payment_tool_id = pb.pay_by_id
+            WHERE
+                f.id = @FormId";
             var parameters = new { FormId = formId };
             var formPayments = await _dbConnection.QueryAsync<FormPayment>(readCommand, parameters);
             return formPayments.AsList();
+        }
+        public async Task<int> GetPaymentAmountAsync(int formId)
+        {
+            var readCommand = @"
+                SELECT
+                    payment_amount
+                FROM
+                    forms_payment
+                WHERE
+                    form_id = @FormId";
+            var parameters = new { FormId = formId };
+            var paymentAmount = await _dbConnection.ExecuteScalarAsync<int>(readCommand, parameters);
+            return paymentAmount;
         }
         public async Task<List<FormDepartment>> GetFormDepartmentsByFormIdAsync(int formId)
         {
@@ -512,18 +578,18 @@ namespace Infrastructure.Repositories
         public async Task UpdateDetailAsync(FormDetail formDetail)
         {
             var updateCommand = @"
-                    UPDATE
-                        forms_detail
-                    SET
-                        detail_title = @Title,
-                        detail_description = @Description,
-                        quantity = @Quantity,
-                        unit_price = @UnitPrice,
-                        unit_id = @UnitId,
-                        detail_total = @Total,
-                        is_checked = @IsChecked
-                    WHERE
-                        detail_id = @DetailId";
+                UPDATE
+                    forms_detail
+                SET
+                    detail_title = @Title,
+                    detail_description = @Description,
+                    quantity = @Quantity,
+                    unit_price = @UnitPrice,
+                    unit_id = @UnitId,
+                    detail_total = @Total,
+                    is_checked = @IsChecked
+                WHERE
+                    detail_id = @DetailId";
             var parameters = new
             {
                 formDetail.DetailId,
@@ -535,6 +601,18 @@ namespace Infrastructure.Repositories
                 formDetail.Total,
                 formDetail.IsChecked
             };
+            await _dbConnection.ExecuteAsync(updateCommand, parameters);
+        }
+        public async Task UpdateFormDetailisCheckAsync(int formId, int detailId)
+        {
+            var updateCommand = @"
+                UPDATE
+                    forms_detail
+                SET
+                    is_checked = 1
+                WHERE
+                    form_id = @FormId AND detail_id = @DetailId";
+            var parameters = new { FormId = formId, DetailId = detailId };
             await _dbConnection.ExecuteAsync(updateCommand, parameters);
         }
         public async Task UpdateSignatureAsync(FormSignatureMember formSignatureMember)
@@ -584,6 +662,46 @@ namespace Infrastructure.Repositories
                 WHERE 
                     form_id = @FormId";
             var parameters = new { Status = status, FormId = formId };
+            await _dbConnection.ExecuteAsync(updateCommand, parameters);
+        }
+        public async Task UpdatePaymentAsync(int formId, int paymentDelta, int deltaTitleId, int paymentTitleId, int paymentToolId, int paymentAmount, int paymentTotal)
+        {
+            var updateCommand = @"
+            UPDATE forms_payment
+            SET
+                payment_total = @PaymentTotal,
+                payment_delta = @PaymentDelta,
+                delta_title_id = @DeltaTitleId,
+                payment_title_id = @PaymentTitleId,
+                payment_tool_id = @PaymentToolId,
+                payment_amount = @PaymentAmount
+            WHERE
+                form_id = @FormId";
+            var parameters = new
+            {
+                FormId = formId,
+                PaymentTotal = paymentTotal,
+                PaymentDelta = paymentDelta,
+                DeltaTitleId = deltaTitleId,
+                PaymentTitleId = paymentTitleId,
+                PaymentToolId = paymentToolId,
+                PaymentAmount = paymentAmount
+            };
+
+            await _dbConnection.ExecuteAsync(updateCommand, parameters);
+        }
+        public async Task UpdatePaymentAmountAsync(int formId)
+        {
+            var detailSumTotal = await GetFormDetailSumTotalAsync(formId);
+
+            var updateCommand = @"
+                UPDATE
+                    forms_payment
+                SET
+                    payment_amount = @PaymentAmount
+                WHERE
+                    form_id = @FormId";
+            var parameters = new { FormId = formId, PaymentAmount = detailSumTotal };
             await _dbConnection.ExecuteAsync(updateCommand, parameters);
         }
 
