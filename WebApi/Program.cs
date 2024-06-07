@@ -1,6 +1,5 @@
 using Application;
 using Infrastructure;
-using Presentation;
 using Serilog;
 using WebApi.Middleware;
 using Infrastructure.Configurations;
@@ -15,8 +14,7 @@ builder.Services.AddControllers()
 
 builder.Services
     .AddApplication()
-    .AddInfrastructure()
-    .AddPresentation();
+    .AddInfrastructure();
 
 builder.Host.UseSerilog((context, configuration) =>
     configuration.ReadFrom.Configuration(context.Configuration));

@@ -15,6 +15,7 @@ namespace Infrastructure.Repositories
         }
 
         // Create section
+
         public async Task<int> CreateFormAsync(Form form)
         {
             var writeCommand = @"
@@ -279,6 +280,7 @@ namespace Infrastructure.Repositories
         }
 
         // Read section
+
         public async Task<List<Form>> GetAllFormsAsync()
         {
             var readCommand = @"
@@ -584,7 +586,9 @@ namespace Infrastructure.Repositories
             var parameters = new { Status = status, FormId = formId };
             await _dbConnection.ExecuteAsync(updateCommand, parameters);
         }
+
         // Delete section
+
         public async Task DeleteFormAsync(int formId)
         {
             var deleteCommand = @"

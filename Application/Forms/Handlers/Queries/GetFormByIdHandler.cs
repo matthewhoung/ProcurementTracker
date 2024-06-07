@@ -35,6 +35,7 @@ namespace Application.Forms.Handlers.Queries
             var departments = await _formRepository.GetFormDepartmentsByFormIdAsync(request.FormId);
             var signatures = await _formRepository.GetFormSignatureMembersByFormIdAsync(request.FormId);
             var filePaths = await _fileUploaderRepository.GetFilePathAsync(request.FormId);
+            var status = await _formRepository.GetFormStatusAsync(request.FormId);
 
             var formInfoDto = new FormInfoDto
             {
@@ -43,6 +44,7 @@ namespace Application.Forms.Handlers.Queries
                 Title = form.Title,
                 Description = form.Description,
                 Stage = form.Stage,
+                Status = status,
                 CreatedAt = form.CreatedAt,
                 UpdatedAt = form.UpdatedAt,
                 Details = details,
