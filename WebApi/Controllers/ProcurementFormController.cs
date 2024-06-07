@@ -170,6 +170,7 @@ namespace WebApi.Controllers
         /*
          * Update section
          */
+
         [HttpPut("update/signature")]
         public async Task<IActionResult> UpdateSignature(int formId, int userId)
         {
@@ -189,6 +190,7 @@ namespace WebApi.Controllers
         /*
          * Delete section
          */
+
         [HttpDelete("delete/{formid}")]
         public async Task<IActionResult> DeleteForm(int formid)
         {

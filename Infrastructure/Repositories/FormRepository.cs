@@ -495,7 +495,7 @@ namespace Infrastructure.Repositories
             var checkList = await GetFormSignatureMembersByFormIdAsync(formId);
             var allChecked = checkList.All(c => c.IsChecked);
             var creatorChecked = checkList.Any(c => c.RoleName == "Creator" && c.IsChecked);
-            var status = allChecked ? "finished" :(creatorChecked ? "inprogrss" : "pending");
+            var status = allChecked ? "finished" : (creatorChecked ? "inprogress" : "pending");
             return status;
         }
 
@@ -560,6 +560,23 @@ namespace Infrastructure.Repositories
         }
         public async Task UpdateFormStatusAsync(int formId, string stage, string status)
         {
+            string tableName = stage switch
+            {
+                "OrderForm" => "forms_orderform",
+                "ReceiveForm" => "forms_receiveform",
+                "PayableForm" => "forms_payableform",
+                _ => throw new ArgumentException("Invalid form type")
+            };
+
+            var updateCommand = $@"
+                UPDATE 
+                    {tableName}
+                SET 
+                    status = @Status
+                WHERE 
+                    form_id = @FormId";
+            var parameters = new { Status = status, FormId = formId };
+            await _dbConnection.ExecuteAsync(updateCommand, parameters);
         }
         // Delete section
         public async Task DeleteFormAsync(int formId)

@@ -1,6 +1,8 @@
 ﻿using Domain.Interfaces;
 using FluentValidation;
 using MediatR;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Application.Forms.Handlers.Commands
 {
@@ -36,7 +38,8 @@ namespace Application.Forms.Handlers.Commands
                 throw new ValidationException(validationResult.Errors);
             }
 
-            var formSignatureMember = await _formRepository.GetFormSignatureMemberAsync(request.FormId, request.UserId);
+            var formSignatureMembers = await _formRepository.GetFormSignatureMembersByFormIdAsync(request.FormId);
+            var formSignatureMember = formSignatureMembers.FirstOrDefault(member => member.UserId == request.UserId);
 
             if (formSignatureMember == null)
             {
@@ -46,9 +49,10 @@ namespace Application.Forms.Handlers.Commands
             formSignatureMember.IsChecked = true;
             await _formRepository.UpdateSignatureAsync(formSignatureMember);
 
-            var allChecked = await _formRepository.GetAllSignaturesCheckedAsync(request.FormId, formSignatureMember.Stage);
+            var formStatus = await _formRepository.GetFormStatusAsync(request.FormId);
+            await _formRepository.UpdateFormStatusAsync(request.FormId, formSignatureMember.Stage, formStatus);
 
-            if (allChecked)
+            if (formStatus == "finished")
             {
                 if (formSignatureMember.Stage == "OrderForm")
                 {

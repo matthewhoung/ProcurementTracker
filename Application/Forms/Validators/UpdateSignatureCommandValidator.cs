@@ -19,12 +19,9 @@ namespace Application.Forms.Validators
 
         private async Task<bool> UserIdMatchesRole(UpdateSignatureCommand command, int userId, CancellationToken cancellationToken)
         {
-            var formSignatureMember = await _formRepository.GetFormSignatureMemberAsync(command.FormId, userId);
-            if (formSignatureMember == null)
-            {
-                return false;
-            }
-            return formSignatureMember.UserId == userId;
+            var formSignatureMembers = await _formRepository.GetFormSignatureMembersByFormIdAsync(command.FormId);
+            var formSignatureMember = formSignatureMembers.FirstOrDefault(member => member.UserId == userId);
+            return formSignatureMember != null;
         }
     }
 }
