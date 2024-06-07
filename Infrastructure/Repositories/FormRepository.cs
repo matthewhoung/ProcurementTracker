@@ -73,7 +73,6 @@ namespace Infrastructure.Repositories
             var orderFormId = await _dbConnection.ExecuteScalarAsync<int>(writeCommand, parameters);
             return orderFormId;
         }
-
         public async Task<int> CreateReceiveFormAsync(int formId)
         {
             var writeCommand = @"
@@ -96,7 +95,6 @@ namespace Infrastructure.Repositories
             var receiveFormId = await _dbConnection.ExecuteScalarAsync<int>(writeCommand, parameters);
             return receiveFormId;
         }
-
         public async Task<int> CreatePayableFormAsync(int formId)
         {
             var writeCommand = @"
@@ -119,7 +117,6 @@ namespace Infrastructure.Repositories
             var payableFormId = await _dbConnection.ExecuteScalarAsync<int>(writeCommand, parameters);
             return payableFormId;
         }
-
         public async Task<int> CreateFormDetailAsync(FormDetail formDetail)
         {
             var writeCommand = @"
@@ -161,16 +158,9 @@ namespace Infrastructure.Repositories
             var detailId = await _dbConnection.ExecuteScalarAsync<int>(writeCommand, details);
             return detailId;
         }
-
         public async Task<int> CreateFormSignatureMemberAsync(FormSignatureMember formSignatureMember)
         {
-            var table = formSignatureMember.Stage switch
-            {
-                "order" => "order_signatures",
-                "receive" => "receive_signatures",
-                "payable" => "payable_signatures",
-                _ => throw new ArgumentException("Invalid stage")
-            };
+            var table = await GetFormStageAsync(formSignatureMember.FormId);
 
             var writeCommand = $@"
                     INSERT INTO {table}
@@ -190,15 +180,14 @@ namespace Infrastructure.Repositories
                     SELECT LAST_INSERT_ID();";
             var parameters = new
             {
-                formSignatureMember.FormId,
-                formSignatureMember.UserId,
-                formSignatureMember.RoleId,
-                formSignatureMember.IsChecked
+                FormId = formSignatureMember.FormId,
+                UserId = formSignatureMember.UserId,
+                RoleId = formSignatureMember.RoleId,
+                IsChecked = formSignatureMember.IsChecked
             };
             var signId = await _dbConnection.ExecuteScalarAsync<int>(writeCommand, parameters);
             return signId;
         }
-
         public async Task<int> CreateFormWorkerList(FormWorker formWorker)
         {
             var writeCommand = @"
@@ -224,7 +213,6 @@ namespace Infrastructure.Repositories
             var workerId = await _dbConnection.ExecuteScalarAsync<int>(writeCommand, parameters);
             return workerId;
         }
-
         public async Task<int> CreateFormPaymentInfo(FormPayment formPaymentInfo)
         {
             var writeCommand = @"
@@ -259,7 +247,6 @@ namespace Infrastructure.Repositories
             var payId = await _dbConnection.ExecuteScalarAsync<int>(writeCommand, parameters);
             return payId;
         }
-
         public async Task<int> CreateFormDepartment(FormDepartment formDepartment)
         {
             var writeCommand = @"
@@ -285,7 +272,6 @@ namespace Infrastructure.Repositories
             return departmentId;
         }
 
-
         // Read section
         public async Task<List<Form>> GetAllFormsAsync()
         {
@@ -304,7 +290,6 @@ namespace Infrastructure.Repositories
             var forms = await _dbConnection.QueryAsync<Form>(readCommand);
             return forms.AsList();
         }
-
         public async Task<Form> GetFormByIdAsync(int formId)
         {
             var readCommand = @"
@@ -324,7 +309,27 @@ namespace Infrastructure.Repositories
             var form = await _dbConnection.QueryFirstOrDefaultAsync<Form>(readCommand, parameters);
             return form;
         }
-
+        public async Task<string> GetFormStageAsync(int formId)
+        {
+            var readCommand = @"
+                    SELECT
+                        stage
+                    FROM
+                        forms
+                    WHERE
+                        id = @FormId";
+            var parameters = new { FormId = formId };
+            var stage = await _dbConnection.QuerySingleOrDefaultAsync<string>(readCommand, parameters);
+            
+            var table = stage switch
+            {
+                "OrderForm" => "order_signatures",
+                "ReceiveForm" => "receive_signatures",
+                "PayableForm" => "payable_signatures",
+                _ => throw new ArgumentException("Invalid stage")
+            };
+            return table;
+        }
         public async Task<List<FormDetail>> GetFormDetailsByFormIdAsync(int formId)
         {
             var readCommand = @"
@@ -352,93 +357,6 @@ namespace Infrastructure.Repositories
             var formDetails = await _dbConnection.QueryAsync<FormDetail>(readCommand, parameters);
             return formDetails.AsList();
         }
-
-        public async Task<List<FormSignatureMember>> GetFormSignatureMembersByFormIdAsync(int formId)
-        {
-            var stageQuery = @"
-                SELECT stage
-                FROM forms
-                WHERE id = @FormId";
-            var parameters = new { FormId = formId };
-            var stage = await _dbConnection.QuerySingleOrDefaultAsync<string>(stageQuery, parameters);
-
-            if (string.IsNullOrEmpty(stage))
-            {
-                throw new ArgumentException("Invalid form Id");
-            }
-
-            string signatureTable = stage switch
-            {
-                "OrderForm" => "order_signatures",
-                "ReceiveForm" => "receive_signatures",
-                "PayableForm" => "payable_signatures",
-                _ => throw new ArgumentException("Invalid form stage")
-            };
-
-            var readCommand = $@"
-                SELECT
-                    fsm.sign_id AS SignId,
-                    f.id AS FormId,
-                    fsm.user_id AS UserId,
-                    r.role_id AS RoleId,
-                    r.role_name AS RoleName,
-                    fsm.is_checked AS IsChecked
-                FROM
-                    forms f
-                JOIN
-                    {signatureTable} fsm ON f.id = fsm.form_id
-                JOIN
-                    roles r ON fsm.role_id = r.role_id
-                WHERE
-                    f.id = @FormId";
-
-            var formSignatureMembers = await _dbConnection.QueryAsync<FormSignatureMember>(readCommand, parameters);
-            return formSignatureMembers.AsList();
-        }
-        public async Task<FormSignatureMember> GetFormSignatureMemberAsync(int formId, int userId)
-        {
-            var stageQuery = @"
-                SELECT 
-                    stage
-                FROM 
-                    forms
-                WHERE id = @FormId";
-            var parametersForStage = new { FormId = formId };
-            var stage = await _dbConnection.QuerySingleOrDefaultAsync<string>(stageQuery, parametersForStage);
-
-            if (string.IsNullOrEmpty(stage))
-            {
-                throw new ArgumentException("Invalid form Id");
-            }
-
-            string signatureTable = stage switch
-            {
-                "OrderForm" => "order_signatures",
-                "ReceiveForm" => "receive_signatures",
-                "PayableForm" => "payable_signatures",
-                _ => throw new ArgumentException("Invalid form stage")
-            };
-
-            var readCommand = $@"
-                SELECT
-                    fsm.sign_id AS SignId,
-                    fsm.form_id AS FormId,
-                    fsm.user_id AS UserId,
-                    r.role_id AS RoleId,
-                    r.role_name AS RoleName,
-                    fsm.is_checked AS IsChecked,
-                    @Stage AS Stage
-                FROM
-                    {signatureTable} fsm
-                JOIN
-                    roles r ON fsm.role_id = r.role_id
-                WHERE
-                    fsm.form_id = @FormId AND fsm.user_id = @UserId";
-
-            var parametersForRead = new { FormId = formId, UserId = userId, Stage = stage };
-            return await _dbConnection.QuerySingleOrDefaultAsync<FormSignatureMember>(readCommand, parametersForRead);
-        }
-
         public async Task<List<FormWorker>> GetFormWorkerListByFormIdAsync(int formId)
         {
             var readCommand = @"
@@ -463,7 +381,6 @@ namespace Infrastructure.Repositories
             var formWorkers = await _dbConnection.QueryAsync<FormWorker>(readCommand, parameters);
             return formWorkers.AsList();
         }
-
         public async Task<List<FormPayment>> GetFormPaymentInfoByFormIdAsync(int formId)
         {
             var readCommand = @"
@@ -491,7 +408,6 @@ namespace Infrastructure.Repositories
             var formPayments = await _dbConnection.QueryAsync<FormPayment>(readCommand, parameters);
             return formPayments.AsList();
         }
-
         public async Task<List<FormDepartment>> GetFormDepartmentsByFormIdAsync(int formId)
         {
             var readCommand = @"
@@ -512,25 +428,75 @@ namespace Infrastructure.Repositories
             var formDepartments = await _dbConnection.QueryAsync<FormDepartment>(readCommand, parameters);
             return formDepartments.AsList();
         }
-
-        public async Task<bool> GetAllSignaturesCheckedAsync(int formId, string stage)
+        public async Task<List<FormSignatureMember>> GetFormSignatureMembersByFormIdAsync(int formId)
         {
-            var table = stage switch
-            {
-                "OrderForm" => "order_signatures",
-                "ReceiveForm" => "receive_signatures",
-                "PayableForm" => "payable_signatures",
-                _ => throw new ArgumentException("Invalid stage")
-            };
+            var signatureTable = await GetFormStageAsync(formId);
+
+            var readCommand = $@"
+                SELECT
+                    fsm.sign_id AS SignId,
+                    f.id AS FormId,
+                    fsm.user_id AS UserId,
+                    r.role_id AS RoleId,
+                    r.role_name AS RoleName,
+                    f.stage AS Stage,
+                    fsm.is_checked AS IsChecked
+                FROM
+                    forms f
+                JOIN
+                    {signatureTable} fsm ON f.id = fsm.form_id
+                JOIN
+                    roles r ON fsm.role_id = r.role_id
+                WHERE
+                    f.id = @FormId";
+
+            var parameters = new { FormId = formId };
+            var formSignatureMembers = await _dbConnection.QueryAsync<FormSignatureMember>(readCommand, parameters);
+            return formSignatureMembers.AsList();
+        }
+        public async Task<FormSignatureMember> GetUnSignedMemberAsync(int formId)
+        {
+            var signatureTable = await GetFormStageAsync(formId);
+
+            var readCommand = $@"
+                SELECT
+                    fsm.sign_id AS SignId,
+                    fsm.form_id AS FormId,
+                    fsm.user_id AS UserId,
+                    r.role_id AS RoleId,
+                    r.role_name AS RoleName,
+                    fsm.is_checked AS IsChecked,
+                FROM
+                    {signatureTable} fsm
+                JOIN
+                    roles r ON fsm.role_id = r.role_id
+                WHERE
+                    fsm.is_checked = 0 AND fms.form_id == @FormId";
+
+            var parametersForRead = new { FormId = formId};
+            var formSignatureMember = await _dbConnection.QueryFirstOrDefaultAsync<FormSignatureMember>(readCommand, parametersForRead);
+            return formSignatureMember;
+        }
+        public async Task<bool> GetAllSignaturesCheckedAsync(int formId)
+        {
+            var table = await GetFormStageAsync(formId);
 
             var checkCommand = $@"
-            SELECT COUNT(*)
-            FROM {table}
-            WHERE form_id = @FormId AND is_checked = 0";
+                SELECT COUNT(status)
+                FROM {table}
+                WHERE form_id = @FormId AND is_checked = 0";
             var parameters = new { FormId = formId };
             var uncheckedCount = await _dbConnection.ExecuteScalarAsync<int>(checkCommand, parameters);
 
             return uncheckedCount == 0;
+        }
+        public async Task<string> GetFormStatusAsync(int formId)
+        {
+            var checkList = await GetFormSignatureMembersByFormIdAsync(formId);
+            var allChecked = checkList.All(c => c.IsChecked);
+            var creatorChecked = checkList.Any(c => c.RoleName == "Creator" && c.IsChecked);
+            var status = allChecked ? "finished" :(creatorChecked ? "inprogrss" : "pending");
+            return status;
         }
 
         // Update section
@@ -574,13 +540,27 @@ namespace Infrastructure.Repositories
             };
 
             var updateCommand = $@"
-            UPDATE {table}
-            SET is_checked = 1
-            WHERE form_id = @FormId AND user_id = @UserId";
+                UPDATE {table}
+                SET is_checked = 1
+                WHERE form_id = @FormId AND user_id = @UserId";
             var parameters = new { FormId = formSignatureMember.FormId, UserId = formSignatureMember.UserId };
             await _dbConnection.ExecuteAsync(updateCommand, parameters);
         }
-
+        public async Task UpdateFormStageAsync(int formId, string stage)
+        {
+            var updateCommand = @"
+                UPDATE
+                    forms
+                SET
+                    stage = @Stage
+                WHERE
+                    id = @FormId";
+            var parameters = new { FormId = formId, Stage = stage };
+            await _dbConnection.ExecuteAsync(updateCommand, parameters);
+        }
+        public async Task UpdateFormStatusAsync(int formId, string stage, string status)
+        {
+        }
         // Delete section
         public async Task DeleteFormAsync(int formId)
         {

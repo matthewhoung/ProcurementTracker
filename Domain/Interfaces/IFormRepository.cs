@@ -18,20 +18,23 @@ namespace Domain.Interfaces
         // Read section
         Task<List<Form>> GetAllFormsAsync();
         Task<Form> GetFormByIdAsync(int formId);
+        Task<string> GetFormStageAsync(int formId);
         Task<List<FormDetail>> GetFormDetailsByFormIdAsync(int formId);
-        Task<List<FormSignatureMember>> GetFormSignatureMembersByFormIdAsync(int formId);
         Task<List<FormWorker>> GetFormWorkerListByFormIdAsync(int formId);
         Task<List<FormPayment>> GetFormPaymentInfoByFormIdAsync(int formId);
         Task<List<FormDepartment>> GetFormDepartmentsByFormIdAsync(int formId);
-        Task<FormSignatureMember> GetFormSignatureMemberAsync(int formId, int userId);
-        Task<bool> GetAllSignaturesCheckedAsync(int formId, string stage);
+        Task<List<FormSignatureMember>> GetFormSignatureMembersByFormIdAsync(int formId);
+        Task<FormSignatureMember> GetUnSignedMemberAsync(int formId);
+        Task<bool> GetAllSignaturesCheckedAsync(int formId);
+        Task<string> GetFormStatusAsync(int formId);
 
         // Update section
         Task UpdateSignatureAsync(FormSignatureMember formSignatureMemeber);
         Task UpdateDetailAsync(FormDetail formDetail);
+        Task UpdateFormStageAsync(int formId, string stage);
+        Task UpdateFormStatusAsync(int formId, string stage, string status);
 
         // Delete section
         Task DeleteFormAsync(int formId);
-        
     }
 }

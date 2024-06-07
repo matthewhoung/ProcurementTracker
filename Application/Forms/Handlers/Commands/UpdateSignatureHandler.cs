@@ -1,4 +1,5 @@
 ﻿using Domain.Interfaces;
+using FluentValidation;
 using MediatR;
 
 namespace Application.Forms.Handlers.Commands
@@ -18,14 +19,23 @@ namespace Application.Forms.Handlers.Commands
     public class UpdateSignatureCommandHandler : IRequestHandler<UpdateSignatureCommand, Unit>
     {
         private readonly IFormRepository _formRepository;
+        private readonly IValidator<UpdateSignatureCommand> _validator;
 
-        public UpdateSignatureCommandHandler(IFormRepository formRepository)
+        public UpdateSignatureCommandHandler(IFormRepository formRepository, IValidator<UpdateSignatureCommand> validator)
         {
             _formRepository = formRepository;
+            _validator = validator;
         }
 
         public async Task<Unit> Handle(UpdateSignatureCommand request, CancellationToken cancellationToken)
         {
+            var validationResult = await _validator.ValidateAsync(request, cancellationToken);
+
+            if (!validationResult.IsValid)
+            {
+                throw new ValidationException(validationResult.Errors);
+            }
+
             var formSignatureMember = await _formRepository.GetFormSignatureMemberAsync(request.FormId, request.UserId);
 
             if (formSignatureMember == null)
@@ -34,7 +44,6 @@ namespace Application.Forms.Handlers.Commands
             }
 
             formSignatureMember.IsChecked = true;
-
             await _formRepository.UpdateSignatureAsync(formSignatureMember);
 
             var allChecked = await _formRepository.GetAllSignaturesCheckedAsync(request.FormId, formSignatureMember.Stage);
@@ -43,13 +52,13 @@ namespace Application.Forms.Handlers.Commands
             {
                 if (formSignatureMember.Stage == "OrderForm")
                 {
-                    // update form stage to ReceiveForm
                     await _formRepository.CreateReceiveFormAsync(request.FormId);
+                    await _formRepository.UpdateFormStageAsync(request.FormId, "ReceiveForm");
                 }
                 else if (formSignatureMember.Stage == "ReceiveForm")
                 {
-                    // update form stage to PayableForm
                     await _formRepository.CreatePayableFormAsync(request.FormId);
+                    await _formRepository.UpdateFormStageAsync(request.FormId, "PayableForm");
                 }
             }
 

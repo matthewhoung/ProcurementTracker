@@ -17,6 +17,10 @@ namespace WebApi.Controllers
             _mediator = mediator;
         }
 
+        /*
+         * Create section
+         */
+
         [HttpPost("create")]
         public async Task<IActionResult> CreateForm([FromBody] CreateFormCommand command)
         {
@@ -79,6 +83,10 @@ namespace WebApi.Controllers
             return Ok(formDepartmentId);
         }
 
+        /*
+         * Read section
+         */
+
         [HttpGet("get/all")]
         public async Task<IActionResult> GetAllForms()
         {
@@ -95,20 +103,20 @@ namespace WebApi.Controllers
             return Ok(form);
         }
 
+        [HttpGet("get/{formid}/stage")]
+        public async Task<IActionResult> GetFormStage(int formid)
+        {
+            var query = new GetFormStageQuery(formid);
+            var formStage = await _mediator.Send(query);
+            return Ok(formStage);
+        }
+
         [HttpGet("get/{formid}/details")]
         public async Task<IActionResult> GetFormDetailsByFormId(int formid)
         {
             var query = new GetFormDetailsByFormIdQuery(formid);
             var formDetails = await _mediator.Send(query);
             return Ok(formDetails);
-        }
-
-        [HttpGet("get/{formid}/signature/members")]
-        public async Task<IActionResult> GetFormSignatureMembersByFormId(int formid)
-        {
-            var query = new GetFormSignatureMemberByFormIdQuery(formid);
-            var formSignatureMembers = await _mediator.Send(query);
-            return Ok(formSignatureMembers);
         }
 
         [HttpGet("get/{formid}/worker/list")]
@@ -135,6 +143,33 @@ namespace WebApi.Controllers
             return Ok(formDepartments);
         }
 
+        [HttpGet("get/{formid}/signature/members")]
+        public async Task<IActionResult> GetFormSignatureMembersByFormId(int formid)
+        {
+            var query = new GetFormSignatureMemberByFormIdQuery(formid);
+            var formSignatureMembers = await _mediator.Send(query);
+            return Ok(formSignatureMembers);
+        }
+
+        [HttpGet("get/{formid}/unsigned/member")]
+        public async Task<IActionResult> GetUnSignedMember(int formid)
+        {
+            var query = new GetUnSignedMemberQuery(formid);
+            var formSignatureMember = await _mediator.Send(query);
+            return Ok(formSignatureMember);
+        }
+
+        [HttpGet("get/{formid}/status")]
+        public async Task<IActionResult> GetFormStatus(int formid)
+        {
+            var query = new GetFormStatusQuery(formid);
+            var formStatus = await _mediator.Send(query);
+            return Ok(formStatus);
+        }
+
+        /*
+         * Update section
+         */
         [HttpPut("update/signature")]
         public async Task<IActionResult> UpdateSignature(int formId, int userId)
         {
@@ -151,6 +186,9 @@ namespace WebApi.Controllers
             return Ok();
         }
 
+        /*
+         * Delete section
+         */
         [HttpDelete("delete/{formid}")]
         public async Task<IActionResult> DeleteForm(int formid)
         {
