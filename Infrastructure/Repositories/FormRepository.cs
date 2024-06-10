@@ -664,28 +664,28 @@ namespace Infrastructure.Repositories
             var parameters = new { Status = status, FormId = formId };
             await _dbConnection.ExecuteAsync(updateCommand, parameters);
         }
-        public async Task UpdatePaymentAsync(int formId, int paymentDelta, int deltaTitleId, int paymentTitleId, int paymentToolId, int paymentAmount, int paymentTotal)
+        public async Task UpdatePaymentAsync(FormPayment formPayment)
         {
             var updateCommand = @"
-            UPDATE forms_payment
-            SET
-                payment_total = @PaymentTotal,
-                payment_delta = @PaymentDelta,
-                delta_title_id = @DeltaTitleId,
-                payment_title_id = @PaymentTitleId,
-                payment_tool_id = @PaymentToolId,
-                payment_amount = @PaymentAmount
-            WHERE
-                form_id = @FormId";
+                UPDATE forms_payment
+                SET
+                    payment_total = @PaymentTotal,
+                    payment_delta = @PaymentDelta,
+                    delta_title_id = @DeltaTitleId,
+                    payment_title_id = @PaymentTitleId,
+                    payment_tool_id = @PaymentToolId,
+                    payment_amount = @PaymentAmount
+                WHERE
+                    form_id = @FormId";
             var parameters = new
             {
-                FormId = formId,
-                PaymentTotal = paymentTotal,
-                PaymentDelta = paymentDelta,
-                DeltaTitleId = deltaTitleId,
-                PaymentTitleId = paymentTitleId,
-                PaymentToolId = paymentToolId,
-                PaymentAmount = paymentAmount
+                formPayment.FormId,
+                formPayment.PaymentTotal,
+                formPayment.PaymentDelta,
+                formPayment.DeltaTitleId,
+                formPayment.PaymentTitleId,
+                formPayment.PaymentToolId,
+                formPayment.PaymentAmount
             };
 
             await _dbConnection.ExecuteAsync(updateCommand, parameters);

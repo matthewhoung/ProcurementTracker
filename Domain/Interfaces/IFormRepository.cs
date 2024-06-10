@@ -41,7 +41,7 @@ namespace Domain.Interfaces
         // New Section
         Task UpdateFormDetailisCheckAsync(int formId, int detailId);
         Task UpdatePaymentAmountAsync(int formId);
-        Task UpdatePaymentAsync(int formId, int paymentDelta, int deltaTitleId, int paymentTitleId, int paymentToolId, int paymentAmount, int paymentTotal);
+        Task UpdatePaymentAsync(FormPayment formPayment);
         Task<List<int>> GetAffiliateFormIdsAsync(int formId);
         Task<int> GetFormDetailSumTotalAsync(int formId);
         Task<int> GetPaymentAmountAsync(int formId);

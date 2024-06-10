@@ -1,4 +1,5 @@
-﻿using Application.Forms.Handlers.Commands;
+﻿using Application.DTOs;
+using Application.Forms.Handlers.Commands;
 using Application.Forms.Handlers.Queries;
 using Domain.Entities.Forms;
 using MediatR;
@@ -193,12 +194,17 @@ namespace WebApi.Controllers
             return Ok();
         }
         [HttpPut("update/payment")]
-        public async Task<IActionResult> UpdatePaymentCalculations([FromBody] FormPayment formPayment)
+        public async Task<IActionResult> UpdatePaymentCalculations([FromBody] UpdatePaymentCalculationsDto dto)
         {
-            var command = new UpdatePaymentCalculationsCommand(formPayment);
+            if (dto == null)
+            {
+                return BadRequest("Invalid payment data.");
+            }
+
+            var command = new UpdatePaymentCalculationsCommand(dto);
             await _mediator.Send(command);
 
-            return Ok();
+            return Ok("Payment calculations updated successfully.");
         }
 
         /*

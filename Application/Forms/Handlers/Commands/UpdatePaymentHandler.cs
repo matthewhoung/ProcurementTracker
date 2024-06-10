@@ -1,4 +1,5 @@
-﻿using Domain.Entities.Forms;
+﻿using Application.DTOs;
+using Domain.Entities.Forms;
 using Domain.Interfaces;
 using MediatR;
 
@@ -6,19 +7,11 @@ namespace Application.Forms.Handlers.Commands
 {
     public class UpdatePaymentCalculationsCommand : IRequest<Unit>
     {
-        public int FormId { get; }
-        public int PaymentDelta { get; }
-        public int DeltaTitleId { get; }
-        public int PaymentTitleId { get; }
-        public int PaymentToolId { get; }
+        public UpdatePaymentCalculationsDto PaymentCalculationsDto { get; }
 
-        public UpdatePaymentCalculationsCommand(FormPayment formPayment)
+        public UpdatePaymentCalculationsCommand(UpdatePaymentCalculationsDto paymentCalculationsDto)
         {
-            FormId = formPayment.FormId;
-            PaymentDelta = formPayment.PaymentDelta;
-            DeltaTitleId = formPayment.DeltaTitleId;
-            PaymentTitleId = formPayment.PaymentTitleId;
-            PaymentToolId = formPayment.PaymentToolId;
+            PaymentCalculationsDto = paymentCalculationsDto;
         }
     }
 
@@ -33,11 +26,24 @@ namespace Application.Forms.Handlers.Commands
 
         public async Task<Unit> Handle(UpdatePaymentCalculationsCommand request, CancellationToken cancellationToken)
         {
-            var detailSumTotal = await _formRepository.GetFormDetailSumTotalAsync(request.FormId);
+            var dto = request.PaymentCalculationsDto;
 
-            var paymentTotal = CalculatePaymentTotal(detailSumTotal, request.PaymentDelta, request.DeltaTitleId);
+            var detailSumTotal = await _formRepository.GetFormDetailSumTotalAsync(dto.FormId);
 
-            await _formRepository.UpdatePaymentAsync(request.FormId, request.PaymentDelta, request.DeltaTitleId, request.PaymentTitleId, request.PaymentToolId, detailSumTotal, paymentTotal);
+            var paymentTotal = CalculatePaymentTotal(detailSumTotal, dto.PaymentDelta, dto.DeltaTitleId);
+
+            var formPayment = new FormPayment
+            {
+                FormId = dto.FormId,
+                PaymentDelta = dto.PaymentDelta,
+                DeltaTitleId = dto.DeltaTitleId,
+                PaymentTotal = paymentTotal,
+                PaymentAmount = detailSumTotal,
+                PaymentTitleId = dto.PaymentTitleId,
+                PaymentToolId = dto.PaymentToolId
+            };
+
+            await _formRepository.UpdatePaymentAsync(formPayment);
 
             return Unit.Value;
         }
