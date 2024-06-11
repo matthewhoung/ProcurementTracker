@@ -10,7 +10,7 @@ namespace Application.Forms.Handlers.Commands
         public int UserId { get; set; }
         public int RoleId { get; set; }
         public bool IsChecked { get; set; }
-        public string Stage { get; set; }
+        //public string Stage { get; set; }
     }
     public class CreateFormSignatureMemberHandler : IRequestHandler<CreateFormSignatureMemberCommand, int>
     {
@@ -21,8 +21,6 @@ namespace Application.Forms.Handlers.Commands
             _formRepository = formRepository;
         }
 
-
-
         public async Task<int> Handle(CreateFormSignatureMemberCommand request, CancellationToken cancellationToken)
         {
             var formSignatureMember = new FormSignatureMember
@@ -30,7 +28,7 @@ namespace Application.Forms.Handlers.Commands
                 FormId = request.FormId,
                 UserId = request.UserId,
                 RoleId = request.RoleId,
-                Stage = request.Stage,
+                Stage = "OrderForm",
                 IsChecked = request.IsChecked
             };
 

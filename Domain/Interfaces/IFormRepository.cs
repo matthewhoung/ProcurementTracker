@@ -6,11 +6,11 @@ namespace Domain.Interfaces
     {
         // Create section
         Task<int> CreateFormAsync(Form form);
-        Task<int> CreateFormDetailAsync(FormDetail formDetail);
+        Task<int> CreateFormDetailsAsync(IEnumerable<FormDetail> formDetails);
         Task<int> CreateFormSignatureMemberAsync(FormSignatureMember formSignatureMember);
-        Task<int> CreateFormWorkerList(FormWorker formWorker);
-        Task<int> CreateFormPaymentInfo(FormPayment formPaymentInfo);
-        Task<int> CreateFormDepartment(FormDepartment formDepartment);
+        Task<int> CreateFormWorkersAsync(IEnumerable<FormWorker> formWorkers);
+        Task<int> CreateFormPaymentInfoAsync(FormPayment formPaymentInfo);
+        Task<int> CreateFormDepartmentsAsync(IEnumerable<FormDepartment> formDepartments);
         Task<int> CreateOrderFormAsync(int formId);
         Task<int> CreateReceiveFormAsync(int formId);
         Task<int> CreatePayableFormAsync(int formId);
@@ -28,22 +28,23 @@ namespace Domain.Interfaces
         Task<List<FormSignatureMember>> GetFormSignatureMembersByFormIdAsync(int formId);
         Task<FormSignatureMember> GetUnSignedMemberAsync(int formId);
         Task<bool> GetAllSignaturesCheckedAsync(int formId);
+        Task<int> GetFormDetailSumTotalAsync(int formId);
+        Task<int> GetPaymentAmountAsync(int formId);
 
         // Update section
         Task UpdateSignatureAsync(FormSignatureMember formSignatureMemeber);
         Task UpdateDetailAsync(FormDetail formDetail);
         Task UpdateFormStageAsync(int formId, string stage);
         Task UpdateFormStatusAsync(int formId, string stage, string status);
+        Task UpdateFormDetailisCheckAsync(int formId, int detailId);//, bool isCheck);
+        Task UpdatePaymentAmountAsync(int formId);
+        Task UpdatePaymentAsync(FormPayment formPayment);
 
         // Delete section
         Task DeleteFormAsync(int formId);
 
         // New Section
-        Task UpdateFormDetailisCheckAsync(int formId, int detailId);
-        Task UpdatePaymentAmountAsync(int formId);
-        Task UpdatePaymentAsync(FormPayment formPayment);
+        
         Task<List<int>> GetAffiliateFormIdsAsync(int formId);
-        Task<int> GetFormDetailSumTotalAsync(int formId);
-        Task<int> GetPaymentAmountAsync(int formId);
     }
 }

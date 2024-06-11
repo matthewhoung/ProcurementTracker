@@ -118,7 +118,7 @@ namespace Infrastructure.Repositories
             var payableFormId = await _dbConnection.ExecuteScalarAsync<int>(writeCommand, parameters);
             return payableFormId;
         }
-        public async Task<int> CreateFormDetailAsync(FormDetail formDetail)
+        public async Task<int> CreateFormDetailsAsync(IEnumerable<FormDetail> formDetails)
         {
             var writeCommand = @"
                 INSERT INTO forms_detail
@@ -142,22 +142,10 @@ namespace Infrastructure.Repositories
                     @UnitId,
                     @Total,
                     @IsChecked
-                );
-                SELECT LAST_INSERT_ID();";
-            var details = new
-            {
-                formDetail.FormId,
-                formDetail.Title,
-                formDetail.Description,
-                formDetail.Quantity,
-                formDetail.UnitPrice,
-                formDetail.UnitId,
-                formDetail.Total,
-                formDetail.IsChecked
-            };
+                );";
 
-            var detailId = await _dbConnection.ExecuteScalarAsync<int>(writeCommand, details);
-            return detailId;
+            var affectedRows = await _dbConnection.ExecuteAsync(writeCommand, formDetails);
+            return affectedRows;
         }
         public async Task<int> CreateFormSignatureMemberAsync(FormSignatureMember formSignatureMember)
         {
@@ -168,7 +156,6 @@ namespace Infrastructure.Repositories
                 "PayableForm" => "payable_signatures",
                 _ => throw new ArgumentException("Invalid stage")
             };
-
             var writeCommand = $@"
                 INSERT INTO {table}
                 (
@@ -195,7 +182,7 @@ namespace Infrastructure.Repositories
             var signId = await _dbConnection.ExecuteScalarAsync<int>(writeCommand, parameters);
             return signId;
         }
-        public async Task<int> CreateFormWorkerList(FormWorker formWorker)
+        public async Task<int> CreateFormWorkersAsync(IEnumerable<FormWorker> formWorkers)
         {
             var writeCommand = @"
                 INSERT INTO forms_worker
@@ -209,18 +196,12 @@ namespace Infrastructure.Repositories
                     @FormId,
                     @WorkerTypeId,
                     @WorkerTeamId
-                );
-                SELECT LAST_INSERT_ID();";
-            var parameters = new
-            {
-                formWorker.FormId,
-                formWorker.WorkerTypeId,
-                formWorker.WorkerTeamId
-            };
-            var workerId = await _dbConnection.ExecuteScalarAsync<int>(writeCommand, parameters);
-            return workerId;
+                );";
+
+            var affectedRows = await _dbConnection.ExecuteAsync(writeCommand, formWorkers);
+            return affectedRows;
         }
-        public async Task<int> CreateFormPaymentInfo(FormPayment formPaymentInfo)
+        public async Task<int> CreateFormPaymentInfoAsync(FormPayment formPaymentInfo)
         {
             var writeCommand = @"
                 INSERT INTO forms_payment
@@ -256,29 +237,22 @@ namespace Infrastructure.Repositories
             var payId = await _dbConnection.ExecuteScalarAsync<int>(writeCommand, parameters);
             return payId;
         }
-        public async Task<int> CreateFormDepartment(FormDepartment formDepartment)
+        public async Task<int> CreateFormDepartmentsAsync(IEnumerable<FormDepartment> formDepartments)
         {
             var writeCommand = @"
-                INSERT INTO forms_department
-                (
-                    form_id,
-                    department_id
-                )
-                VALUES
-                (
-                    @FormId,
-                    @DepartmentId
-                );
-                SELECT LAST_INSERT_ID();";
+            INSERT INTO forms_department
+            (
+                form_id,
+                department_id
+            )
+            VALUES
+            (
+                @FormId,
+                @DepartmentId
+            );";
 
-            var parameters = new
-            {
-                formDepartment.FormId,
-                formDepartment.DepartmentId
-            };
-
-            var departmentId = await _dbConnection.ExecuteScalarAsync<int>(writeCommand, parameters);
-            return departmentId;
+            var affectedRows = await _dbConnection.ExecuteAsync(writeCommand, formDepartments);
+            return affectedRows;
         }
         public async Task<int> CreateAffiliateFormAsync(int formId, int affiliateFormId)
         {

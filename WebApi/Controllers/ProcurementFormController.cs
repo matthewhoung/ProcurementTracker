@@ -26,7 +26,7 @@ namespace WebApi.Controllers
         public async Task<IActionResult> CreateForm([FromBody] CreateFormCommand command)
         {
             var formId = await _mediator.Send(command);
-            return Ok(formId);
+            return Ok($@"FormID:{formId} created successfully!");
         }
         [HttpPost("create/orderform")]
         public async Task<IActionResult> CreateOrderForm([FromBody] CreateOrderFormCommand command)
@@ -49,13 +49,6 @@ namespace WebApi.Controllers
             return Ok(formId);
         }
 
-        [HttpPost("create/detail")]
-        public async Task<IActionResult> CreateFormDetail([FromBody] CreateFormDetailCommand command)
-        {
-            var formDetailId = await _mediator.Send(command);
-            return Ok(formDetailId);
-        }
-
         [HttpPost("create/signature/member")]
         public async Task<IActionResult> CreateFormSignatureMember([FromBody] CreateFormSignatureMemberCommand command)
         {
@@ -63,25 +56,11 @@ namespace WebApi.Controllers
             return Ok(formSignatureMemberId);
         }
 
-        [HttpPost("create/worker")]
-        public async Task<IActionResult> CreateFormWorker([FromBody] CreateFormWorkerCommand command)
-        {
-            var formWorkerId = await _mediator.Send(command);
-            return Ok(formWorkerId);
-        }
-
         [HttpPost("create/payment")]
         public async Task<IActionResult> CreateFormPayment([FromBody] CreateFormPaymentCommand command)
         {
             var formPaymentId = await _mediator.Send(command);
             return Ok(formPaymentId);
-        }
-
-        [HttpPost("create/department")]
-        public async Task<IActionResult> CreateFormDepartment([FromBody] CreateFormDepartmentCommand command)
-        {
-            var formDepartmentId = await _mediator.Send(command);
-            return Ok(formDepartmentId);
         }
 
         [HttpPost("create/affiliate")]
@@ -185,13 +164,12 @@ namespace WebApi.Controllers
             await _mediator.Send(command);
             return Ok();
         }
-
         [HttpPut("update/detail")]
         public async Task<IActionResult> UpdateDetail([FromBody] FormDetail formDetail)
         {
             var command = new UpdateDetailCommand { FormDetail = formDetail };
             await _mediator.Send(command);
-            return Ok();
+            return Ok($@"detail with {formDetail.DetailId} updated successfully.");
         }
         [HttpPut("update/payment")]
         public async Task<IActionResult> UpdatePaymentCalculations([FromBody] UpdatePaymentCalculationsDto dto)

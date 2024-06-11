@@ -28,7 +28,7 @@ namespace Application.Forms.Handlers.Commands
                 PaymentToolId = request.PaymentToolId
             };
 
-            var formPaymentId = await _formRepository.CreateFormPaymentInfo(formPayment);
+            var formPaymentId = await _formRepository.CreateFormPaymentInfoAsync(formPayment);
             return formPaymentId;
         }
     }
