@@ -14,6 +14,7 @@ namespace Application.Forms.Handlers.Commands
         public List<FormWorkerDto> FormWorkers { get; set; }
         public List<FormDepartmentDto> FormDepartments { get; set; }
         public FormPaymentDto PaymentInfo { get; set; }
+        public List<FormSignatureMemberDto> FormSignatureMembers { get; set; }
     }
 
     public class CreateFormHandler : IRequestHandler<CreateFormCommand, int>
@@ -27,6 +28,7 @@ namespace Application.Forms.Handlers.Commands
 
         public async Task<int> Handle(CreateFormCommand request, CancellationToken cancellationToken)
         {
+            //Base form
             var form = new Form
             {
                 ProjectId = request.ProjectId,
@@ -44,7 +46,7 @@ namespace Application.Forms.Handlers.Commands
                 throw new Exception("Failed to create form");
             }
 
-            // Map FormDetailsDto to FormDetail and set default values
+            //itemDetails
             if (request.FormDetails != null && request.FormDetails.Any())
             {
                 var formDetails = request.FormDetails.Select(d => new FormDetail
@@ -64,7 +66,7 @@ namespace Application.Forms.Handlers.Commands
                 await _formRepository.CreateFormDetailsAsync(formDetails);
             }
 
-            // Map FormWorkersDto to FormWorker and set FormId
+            //Workers
             if (request.FormWorkers != null && request.FormWorkers.Any())
             {
                 var formWorkers = request.FormWorkers.Select(w => new FormWorker
@@ -77,7 +79,7 @@ namespace Application.Forms.Handlers.Commands
                 await _formRepository.CreateFormWorkersAsync(formWorkers);
             }
 
-            // Map FormDepartmentsDto to FormDepartment and set FormId
+            //Department
             if (request.FormDepartments != null && request.FormDepartments.Any())
             {
                 var formDepartments = request.FormDepartments.Select(d => new FormDepartment
@@ -89,7 +91,7 @@ namespace Application.Forms.Handlers.Commands
                 await _formRepository.CreateFormDepartmentsAsync(formDepartments);
             }
 
-            // Map FormDepartmentsDto to FormDepartment and set FormId
+            //PaymentInfo
             if (request.PaymentInfo != null)
             {
                 var formPaymentInfo = new FormPayment
@@ -105,6 +107,20 @@ namespace Application.Forms.Handlers.Commands
 
                 await _formRepository.CreateFormPaymentInfoAsync(formPaymentInfo);
                 await _formRepository.UpdatePaymentAmountAsync(formId);
+            }
+
+            //SignatureMembers
+            if (request.FormSignatureMembers != null && request.FormSignatureMembers.Any())
+            {
+                var formSignatureMembers = request.FormSignatureMembers.Select(s => new FormSignatureMember
+                {
+                    FormId = formId,
+                    UserId = s.UserId,
+                    RoleId = s.RoleId,
+                    IsChecked = false
+                }).ToList();
+
+                await _formRepository.CreateDefaultSignatureMembersAsync(formSignatureMembers);
             }
 
             return formId;

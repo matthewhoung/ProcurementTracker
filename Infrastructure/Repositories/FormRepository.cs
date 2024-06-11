@@ -106,7 +106,7 @@ namespace Infrastructure.Repositories
                 )
                 VALUES
                 (
-                    @FormId
+                    @FormId,
                     'pending'
                 );
                 SELECT LAST_INSERT_ID();";
@@ -180,6 +180,27 @@ namespace Infrastructure.Repositories
             };
             var signId = await _dbConnection.ExecuteScalarAsync<int>(writeCommand, parameters);
             return signId;
+        }
+        public async Task<int> CreateDefaultSignatureMembersAsync(IEnumerable<FormSignatureMember> formSignatureMembers)
+        {
+            var writeCommand = @"
+                INSERT INTO order_signatures
+                (
+                    form_id,
+                    user_id,
+                    role_id,
+                    is_checked
+                )
+                VALUES
+                (
+                    @FormId,
+                    @UserId,
+                    @RoleId,
+                    @IsChecked
+                );";
+
+            var affectedRows = await _dbConnection.ExecuteAsync(writeCommand, formSignatureMembers);
+            return affectedRows;
         }
         public async Task<int> CreateFormWorkersAsync(IEnumerable<FormWorker> formWorkers)
         {
