@@ -13,6 +13,7 @@ namespace Application.Forms.Handlers.Commands
         public List<FormDetailDto> FormDetails { get; set; }
         public List<FormWorkerDto> FormWorkers { get; set; }
         public List<FormDepartmentDto> FormDepartments { get; set; }
+        public FormPaymentDto PaymentInfo { get; set; }
     }
 
     public class CreateFormHandler : IRequestHandler<CreateFormCommand, int>
@@ -86,6 +87,24 @@ namespace Application.Forms.Handlers.Commands
                 }).ToList();
 
                 await _formRepository.CreateFormDepartmentsAsync(formDepartments);
+            }
+
+            // Map FormDepartmentsDto to FormDepartment and set FormId
+            if (request.PaymentInfo != null)
+            {
+                var formPaymentInfo = new FormPayment
+                {
+                    FormId = formId,
+                    PaymentTitleId = request.PaymentInfo.PaymentTitleId,
+                    PaymentToolId = request.PaymentInfo.PaymentToolId,
+                    PaymentAmount = 0,
+                    PaymentDelta = 0,
+                    DeltaTitleId = 1,
+                    PaymentTotal = 0
+                };
+
+                await _formRepository.CreateFormPaymentInfoAsync(formPaymentInfo);
+                await _formRepository.UpdatePaymentAmountAsync(formId);
             }
 
             return formId;

@@ -170,8 +170,7 @@ namespace Infrastructure.Repositories
                     @UserId,
                     @RoleId,
                     @IsChecked
-                );
-                SELECT LAST_INSERT_ID();";
+                );";
             var parameters = new
             {
                 FormId = formSignatureMember.FormId,
@@ -223,18 +222,8 @@ namespace Infrastructure.Repositories
                     @PaymentAmount,
                     @PaymentTitleId,
                     @PaymentToolId
-                );
-                SELECT LAST_INSERT_ID();";
-            var parameters = new
-            {
-                formPaymentInfo.FormId,
-                formPaymentInfo.PaymentTotal,
-                formPaymentInfo.PaymentDelta,
-                formPaymentInfo.PaymentAmount,
-                formPaymentInfo.PaymentTitleId,
-                formPaymentInfo.PaymentToolId
-            };
-            var payId = await _dbConnection.ExecuteScalarAsync<int>(writeCommand, parameters);
+                );";
+            var payId = await _dbConnection.ExecuteScalarAsync<int>(writeCommand, formPaymentInfo);
             return payId;
         }
         public async Task<int> CreateFormDepartmentsAsync(IEnumerable<FormDepartment> formDepartments)

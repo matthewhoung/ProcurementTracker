@@ -38,9 +38,9 @@ namespace Application.Forms.Handlers.Commands
                 PaymentDelta = dto.PaymentDelta,
                 DeltaTitleId = dto.DeltaTitleId,
                 PaymentTotal = paymentTotal,
-                PaymentAmount = detailSumTotal,
-                PaymentTitleId = dto.PaymentTitleId,
-                PaymentToolId = dto.PaymentToolId
+                PaymentAmount = detailSumTotal
+                //PaymentTitleId = dto.PaymentTitleId,
+                //PaymentToolId = dto.PaymentToolId
             };
 
             await _formRepository.UpdatePaymentAsync(formPayment);
