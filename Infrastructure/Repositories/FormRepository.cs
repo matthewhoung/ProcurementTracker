@@ -528,8 +528,8 @@ namespace Infrastructure.Repositories
         {
             var readCommand = @"
                 SELECT
-                    form_id,
-                    form_affiliate_id
+                    form_id AS FormId,
+                    form_affiliate_id AS AffiliateFormId
                 FROM
                     forms_affiliate
                 WHERE
