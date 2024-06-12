@@ -22,6 +22,7 @@ namespace Domain.Interfaces
         Task<Form> GetFormByIdAsync(int formId);
         Task<string> GetFormStageAsync(int formId);
         Task<string> GetFormStatusAsync(int formId);
+        Task<List<FormStatusCount>> GetFormStatusCountsAsync();
         Task<List<FormDetail>> GetFormDetailsByFormIdAsync(int formId);
         Task<List<FormWorker>> GetFormWorkerListByFormIdAsync(int formId);
         Task<List<FormPayment>> GetFormPaymentInfoByFormIdAsync(int formId);
@@ -30,7 +31,6 @@ namespace Domain.Interfaces
         Task<FormSignatureMember> GetUnSignedMemberAsync(int formId);
         Task<bool> GetAllSignaturesCheckedAsync(int formId);
         Task<int> GetFormDetailSumTotalAsync(int formId);
-        Task<int> GetPaymentAmountAsync(int formId);
         Task<List<int>> GetAffiliateFormIdsAsync(int formId);
 
         // Update section
@@ -44,8 +44,5 @@ namespace Domain.Interfaces
 
         // Delete section
         Task DeleteFormAsync(int formId);
-
-        // New Section
-        Task<List<FormStatusCount>> GetFormStatusCountsAsync();
     }
 }

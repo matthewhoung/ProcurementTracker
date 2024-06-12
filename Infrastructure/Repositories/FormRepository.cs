@@ -2,7 +2,6 @@
 using Domain.Entities.Forms;
 using Domain.Interfaces;
 using System.Data;
-using System.Transactions;
 
 namespace Infrastructure.Repositories
 {
@@ -54,52 +53,20 @@ namespace Infrastructure.Repositories
         }
         public async Task<int> CreateOrderFormAsync(int formId)
         {
-            var writeCommand = @"
-                INSERT INTO forms_orderform
-                (
-                    form_id,
-                    status
-                )
-                VALUES
-                (
-                    @FormId,
-                    'pending'
-                );
-                SELECT LAST_INSERT_ID();";
-            var parameters = new
-            {
-                FormId = formId
-            };
-
-            var orderFormId = await _dbConnection.ExecuteScalarAsync<int>(writeCommand, parameters);
-            return orderFormId;
+            return await CreateSubFormAsync("forms_orderform", formId);
         }
         public async Task<int> CreateReceiveFormAsync(int formId)
         {
-            var writeCommand = @"
-                INSERT INTO forms_receiveform
-                (
-                    form_id,
-                    status
-                )
-                VALUES
-                (
-                    @FormId,
-                    'pending'                        
-                );
-                SELECT LAST_INSERT_ID();";
-            var parameters = new
-            {
-                FormId = formId
-            };
-
-            var receiveFormId = await _dbConnection.ExecuteScalarAsync<int>(writeCommand, parameters);
-            return receiveFormId;
+            return await CreateSubFormAsync("forms_receiveform", formId);
         }
         public async Task<int> CreatePayableFormAsync(int formId)
         {
-            var writeCommand = @"
-                INSERT INTO forms_payableform
+            return await CreateSubFormAsync("forms_payableform", formId);
+        }
+        private async Task<int> CreateSubFormAsync(string tableName, int formId)
+        {
+            var writeCommand = $@"
+                INSERT INTO {tableName}
                 (
                     form_id,
                     status
@@ -115,8 +82,7 @@ namespace Infrastructure.Repositories
                 FormId = formId
             };
 
-            var payableFormId = await _dbConnection.ExecuteScalarAsync<int>(writeCommand, parameters);
-            return payableFormId;
+            return await _dbConnection.ExecuteScalarAsync<int>(writeCommand, parameters);
         }
         public async Task<int> CreateFormDetailsAsync(IEnumerable<FormDetail> formDetails)
         {
@@ -178,8 +144,8 @@ namespace Infrastructure.Repositories
                 RoleId = formSignatureMember.RoleId,
                 IsChecked = formSignatureMember.IsChecked
             };
-            var signId = await _dbConnection.ExecuteScalarAsync<int>(writeCommand, parameters);
-            return signId;
+
+            return await _dbConnection.ExecuteScalarAsync<int>(writeCommand, parameters);
         }
         public async Task<int> CreateDefaultSignatureMembersAsync(IEnumerable<FormSignatureMember> formSignatureMembers)
         {
@@ -409,23 +375,23 @@ namespace Infrastructure.Repositories
         public async Task<List<FormWorker>> GetFormWorkerListByFormIdAsync(int formId)
         {
             var readCommand = @"
-                    SELECT
-                        fw.worker_id AS WorkerId,
-                        f.id AS FormId,
-                        fw.worker_type_id AS WorkerTypeId,
-                        wt.worker_type_name AS WorkerTypeName,
-                        fw.worker_team_id AS WorkerTeamId,
-                        wtm.worker_team_name AS WorkerTeamName
-                    FROM
-                        forms f
-                    JOIN
-                        forms_worker fw ON f.id = fw.form_id
-                    JOIN
-                        worker_types wt ON fw.worker_type_id = wt.worker_type_id
-                    JOIN
-                        worker_teams wtm ON wt.worker_type_id = wtm.worker_type_id
-                    WHERE
-                        f.id = @FormId";
+                SELECT
+                    fw.worker_id AS WorkerId,
+                    f.id AS FormId,
+                    fw.worker_type_id AS WorkerTypeId,
+                    wt.worker_type_name AS WorkerTypeName,
+                    fw.worker_team_id AS WorkerTeamId,
+                    wtm.worker_team_name AS WorkerTeamName
+                FROM
+                    forms f
+                JOIN
+                    forms_worker fw ON f.id = fw.form_id
+                JOIN
+                    worker_types wt ON fw.worker_type_id = wt.worker_type_id
+                JOIN
+                    worker_teams wtm ON wt.worker_type_id = wtm.worker_type_id
+                WHERE
+                    f.id = @FormId";
             var parameters = new { FormId = formId };
             var formWorkers = await _dbConnection.QueryAsync<FormWorker>(readCommand, parameters);
             return formWorkers.AsList();
@@ -433,63 +399,50 @@ namespace Infrastructure.Repositories
         public async Task<List<FormPayment>> GetFormPaymentInfoByFormIdAsync(int formId)
         {
             var readCommand = @"
-            SELECT
-                fp.payment_id AS PaymentId,
-                f.id AS FormId,
-                fp.payment_total AS PaymentTotal,
-                fp.payment_delta AS PaymentDelta,
-                fp.delta_title_id AS DeltaTitleId,
-                pt1.pay_type_name AS DeltaTitle,
-                fp.payment_amount AS PaymentAmount,
-                fp.payment_title_id AS PaymentTitleId,
-                pt2.pay_type_name AS PaymentTitle,
-                fp.payment_tool_id AS PaymentToolId,
-                pb.pay_by_name AS PaymentTool
-            FROM
-                forms f
-            JOIN
-                forms_payment fp ON f.id = fp.form_id
-            JOIN
-                pay_types pt1 ON fp.delta_title_id = pt1.pay_type_id
-            JOIN
-                pay_types pt2 ON fp.payment_title_id = pt2.pay_type_id
-            JOIN
-                pay_by pb ON fp.payment_tool_id = pb.pay_by_id
-            WHERE
-                f.id = @FormId";
+                SELECT
+                    fp.payment_id AS PaymentId,
+                    f.id AS FormId,
+                    fp.payment_total AS PaymentTotal,
+                    fp.payment_delta AS PaymentDelta,
+                    fp.delta_title_id AS DeltaTitleId,
+                    pt1.pay_type_name AS DeltaTitle,
+                    fp.payment_amount AS PaymentAmount,
+                    fp.payment_title_id AS PaymentTitleId,
+                    pt2.pay_type_name AS PaymentTitle,
+                    fp.payment_tool_id AS PaymentToolId,
+                    pb.pay_by_name AS PaymentTool
+                FROM
+                    forms f
+                JOIN
+                    forms_payment fp ON f.id = fp.form_id
+                JOIN
+                    pay_types pt1 ON fp.delta_title_id = pt1.pay_type_id
+                JOIN
+                    pay_types pt2 ON fp.payment_title_id = pt2.pay_type_id
+                JOIN
+                    pay_by pb ON fp.payment_tool_id = pb.pay_by_id
+                WHERE
+                    f.id = @FormId";
             var parameters = new { FormId = formId };
             var formPayments = await _dbConnection.QueryAsync<FormPayment>(readCommand, parameters);
             return formPayments.AsList();
         }
-        public async Task<int> GetPaymentAmountAsync(int formId)
-        {
-            var readCommand = @"
-                SELECT
-                    payment_amount
-                FROM
-                    forms_payment
-                WHERE
-                    form_id = @FormId";
-            var parameters = new { FormId = formId };
-            var paymentAmount = await _dbConnection.ExecuteScalarAsync<int>(readCommand, parameters);
-            return paymentAmount;
-        }
         public async Task<List<FormDepartment>> GetFormDepartmentsByFormIdAsync(int formId)
         {
             var readCommand = @"
-                    SELECT
-                        fd.formdepartment_id AS FormDepartmentId,
-                        f.id AS FormId,
-                        fd.department_id AS DepartmentId,
-                        d.department_name AS DepartmentName
-                    FROM
-                        forms f
-                    JOIN
-                        forms_department fd ON f.id = fd.form_id
-                    JOIN
-                        departments d ON fd.department_id = d.department_id
-                    WHERE
-                        f.id = @FormId";
+                SELECT
+                    fd.formdepartment_id AS FormDepartmentId,
+                    f.id AS FormId,
+                    fd.department_id AS DepartmentId,
+                    d.department_name AS DepartmentName
+                FROM
+                    forms f
+                JOIN
+                    forms_department fd ON f.id = fd.form_id
+                JOIN
+                    departments d ON fd.department_id = d.department_id
+                WHERE
+                    f.id = @FormId";
             var parameters = new { FormId = formId };
             var formDepartments = await _dbConnection.QueryAsync<FormDepartment>(readCommand, parameters);
             return formDepartments.AsList();
@@ -722,10 +675,10 @@ namespace Infrastructure.Repositories
         public async Task DeleteFormAsync(int formId)
         {
             var deleteCommand = @"
-                    DELETE FROM
-                        forms
-                    WHERE
-                        id = @FormId";
+                DELETE FROM
+                    forms
+                WHERE
+                    id = @FormId";
             var parameters = new { FormId = formId };
             await _dbConnection.ExecuteAsync(deleteCommand, parameters);
         }
