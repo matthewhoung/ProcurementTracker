@@ -359,6 +359,14 @@ namespace Infrastructure.Repositories
             };
             return table;
         }
+        public async Task<string> GetFormStatusAsync(int formId)
+        {
+            var checkList = await GetFormSignatureMembersByFormIdAsync(formId);
+            var allChecked = checkList.All(c => c.IsChecked);
+            var creatorChecked = checkList.Any(c => c.RoleName == "Creator" && c.IsChecked);
+            var status = allChecked ? "finished" : (creatorChecked ? "inprogress" : "pending");
+            return status;
+        }
         public async Task<List<FormDetail>> GetFormDetailsByFormIdAsync(int formId)
         {
             var readCommand = @"
@@ -548,14 +556,34 @@ namespace Infrastructure.Repositories
 
             return uncheckedCount == 0;
         }
-        public async Task<string> GetFormStatusAsync(int formId)
+        public async Task<List<FormStatusCount>> GetFormStatusCountsAsync()
         {
-            var checkList = await GetFormSignatureMembersByFormIdAsync(formId);
-            var allChecked = checkList.All(c => c.IsChecked);
-            var creatorChecked = checkList.Any(c => c.RoleName == "Creator" && c.IsChecked);
-            var status = allChecked ? "finished" : (creatorChecked ? "inprogress" : "pending");
-            return status;
+            var query = @"
+                SELECT 
+                    'OrderForm' AS FormType,
+                    status,
+                    COUNT(*) AS Count
+                FROM forms_orderform
+                GROUP BY status
+                UNION ALL
+                SELECT 
+                    'ReceiveForm' AS FormType,
+                    status,
+                    COUNT(*) AS Count
+                FROM forms_receiveform
+                GROUP BY status
+                UNION ALL
+                SELECT 
+                    'PayableForm' AS FormType,
+                    status,
+                    COUNT(*) AS Count
+                FROM forms_payableform
+                GROUP BY status;";
+
+            var formStatusCounts = await _dbConnection.QueryAsync<FormStatusCount>(query);
+            return formStatusCounts.ToList();
         }
+
 
         // Update section
 

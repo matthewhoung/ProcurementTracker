@@ -85,7 +85,7 @@ namespace WebApi.Controllers
             return Ok(formDetails);
         }
 
-        [HttpGet("get/{formid}/worker/list")]
+        [HttpGet("get/{formid}/worker")]
         public async Task<IActionResult> GetFormWorkerListByFormId(int formid)
         {
             var query = new GetFormWorkerByFormIdQuery(formid);
@@ -93,7 +93,7 @@ namespace WebApi.Controllers
             return Ok(formWorkers);
         }
 
-        [HttpGet("get/{formid}/payment/info")]
+        [HttpGet("get/{formid}/payment")]
         public async Task<IActionResult> GetFormPaymentInfoByFormId(int formid)
         {
             var query = new GetFormPaymentByFormIdQuery(formid);
@@ -117,7 +117,7 @@ namespace WebApi.Controllers
             return Ok(formSignatureMembers);
         }
 
-        [HttpGet("get/{formid}/unsigned/member")]
+        [HttpGet("get/{formid}/unsigned/members")]
         public async Task<IActionResult> GetUnSignedMember(int formid)
         {
             var query = new GetUnSignedMemberQuery(formid);
@@ -131,6 +131,14 @@ namespace WebApi.Controllers
             var query = new GetFormStatusQuery(formid);
             var formStatus = await _mediator.Send(query);
             return Ok(formStatus);
+        }
+
+        [HttpGet("get/status/counts")]
+        public async Task<IActionResult> GetFormStatusCounts()
+        {
+            var query = new GetFormStatusCountsQuery();
+            var formStatusCounts = await _mediator.Send(query);
+            return Ok(formStatusCounts);
         }
 
         /*
@@ -163,6 +171,13 @@ namespace WebApi.Controllers
             await _mediator.Send(command);
 
             return Ok("Payment calculations updated successfully.");
+        }
+        [HttpPut("update/detail/ischecked")]
+        public async Task<IActionResult> UpdateDetailisChecked(int formId, int detailId)
+        {
+            var command = new UpdateDetialisCheckedCommand(formId, detailId);
+            await _mediator.Send(command);
+            return Ok();
         }
 
         /*
