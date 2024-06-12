@@ -19,5 +19,6 @@ namespace Application.DTOs
         public List<FormPayment> Payments { get; set; }
         public List<FormDepartment> Departments { get; set; }
         public List<FileUploader> FilePaths { get; set; }
+        public List<FormAffiliate> Affiliates { get; set; }
     }
 }

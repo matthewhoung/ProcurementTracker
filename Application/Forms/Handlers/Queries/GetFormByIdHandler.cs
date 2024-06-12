@@ -36,6 +36,7 @@ namespace Application.Forms.Handlers.Queries
             var signatures = await _formRepository.GetFormSignatureMembersByFormIdAsync(request.FormId);
             var filePaths = await _fileUploaderRepository.GetFilePathAsync(request.FormId);
             var status = await _formRepository.GetFormStatusAsync(request.FormId);
+            var affiliateForms = await _formRepository.GetAllAffiliateFormsAsync(request.FormId);
 
             var formInfoDto = new FormInfoDto
             {
@@ -52,7 +53,8 @@ namespace Application.Forms.Handlers.Queries
                 Workers = workers,
                 Payments = payments,
                 Departments = departments,
-                FilePaths = filePaths
+                FilePaths = filePaths,
+                Affiliates = affiliateForms
             };
 
             return formInfoDto;

@@ -28,10 +28,10 @@ namespace Domain.Interfaces
         Task<List<FormPayment>> GetFormPaymentInfoByFormIdAsync(int formId);
         Task<List<FormDepartment>> GetFormDepartmentsByFormIdAsync(int formId);
         Task<List<FormSignatureMember>> GetFormSignatureMembersByFormIdAsync(int formId);
-        Task<FormSignatureMember> GetUnSignedMemberAsync(int formId);
+        Task<List<FormSignatureMember>> GetUnSignedMembersAsync(int formId);
         Task<bool> GetAllSignaturesCheckedAsync(int formId);
         Task<int> GetFormDetailSumTotalAsync(int formId);
-        Task<List<int>> GetAffiliateFormIdsAsync(int formId);
+        Task<List<FormAffiliate>> GetAllAffiliateFormsAsync(int formId);
 
         // Update section
         Task UpdateSignatureAsync(FormSignatureMember formSignatureMemeber);

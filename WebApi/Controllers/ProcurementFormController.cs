@@ -120,7 +120,7 @@ namespace WebApi.Controllers
         [HttpGet("get/{formid}/unsigned/members")]
         public async Task<IActionResult> GetUnSignedMember(int formid)
         {
-            var query = new GetUnSignedMemberQuery(formid);
+            var query = new GetUnSignedMembersQuery(formid);
             var formSignatureMember = await _mediator.Send(query);
             return Ok(formSignatureMember);
         }

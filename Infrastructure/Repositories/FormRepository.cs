@@ -1,4 +1,5 @@
-﻿using Dapper;
+﻿using Application.DTOs;
+using Dapper;
 using Domain.Entities.Forms;
 using Domain.Interfaces;
 using System.Data;
@@ -233,10 +234,10 @@ namespace Infrastructure.Repositories
         public async Task<int> CreateAffiliateFormAsync(int formId, int affiliateFormId)
         {
             var writeCommand = @"
-                INSERT INTO forms_affiliateform
+                INSERT INTO forms_affiliate
                 (
                     form_id,
-                    affiliate_form_id
+                    form_affiliate_id
                 )
                 VALUES
                 (
@@ -290,19 +291,6 @@ namespace Infrastructure.Repositories
             var parameters = new { FormId = formId };
             var form = await _dbConnection.QueryFirstOrDefaultAsync<Form>(readCommand, parameters);
             return form;
-        }
-        public async Task<List<int>> GetAffiliateFormIdsAsync(int formId)
-        {
-            var readCommand = @"
-                SELECT
-                    form_affiliate_id
-                FROM
-                    forms_affiliate
-                WHERE
-                    form_id = @FormId";
-            var parameters = new { FormId = formId };
-            var affiliateFormIds = await _dbConnection.QueryAsync<int>(readCommand, parameters);
-            return affiliateFormIds.AsList();
         }
         public async Task<string> GetFormStageAsync(int formId)
         {
@@ -473,7 +461,7 @@ namespace Infrastructure.Repositories
             var formSignatureMembers = await _dbConnection.QueryAsync<FormSignatureMember>(readCommand, parameters);
             return formSignatureMembers.AsList();
         }
-        public async Task<FormSignatureMember> GetUnSignedMemberAsync(int formId)
+        public async Task<List<FormSignatureMember>> GetUnSignedMembersAsync(int formId)
         {
             var signatureTable = await GetFormStageAsync(formId);
 
@@ -484,17 +472,17 @@ namespace Infrastructure.Repositories
                     fsm.user_id AS UserId,
                     r.role_id AS RoleId,
                     r.role_name AS RoleName,
-                    fsm.is_checked AS IsChecked,
+                    fsm.is_checked AS IsChecked
                 FROM
                     {signatureTable} fsm
                 JOIN
                     roles r ON fsm.role_id = r.role_id
                 WHERE
-                    fsm.is_checked = 0 AND fms.form_id == @FormId";
+                    fsm.is_checked = 0 AND fsm.form_id = @FormId";
 
-            var parametersForRead = new { FormId = formId};
-            var formSignatureMember = await _dbConnection.QueryFirstOrDefaultAsync<FormSignatureMember>(readCommand, parametersForRead);
-            return formSignatureMember;
+            var parametersForRead = new { FormId = formId };
+            var formSignatureMembers = await _dbConnection.QueryAsync<FormSignatureMember>(readCommand, parametersForRead);
+            return formSignatureMembers.AsList();
         }
         public async Task<bool> GetAllSignaturesCheckedAsync(int formId)
         {
@@ -536,7 +524,21 @@ namespace Infrastructure.Repositories
             var formStatusCounts = await _dbConnection.QueryAsync<FormStatusCount>(query);
             return formStatusCounts.ToList();
         }
+        public async Task<List<FormAffiliate>> GetAllAffiliateFormsAsync(int formId)
+        {
+            var readCommand = @"
+                SELECT
+                    form_id,
+                    form_affiliate_id
+                FROM
+                    forms_affiliate
+                WHERE
+                    form_id = @FormId;";
 
+            var parameters = new { FormId = formId };
+            var affiliateForms = await _dbConnection.QueryAsync<FormAffiliate>(readCommand, parameters);
+            return affiliateForms.AsList();
+        }
 
         // Update section
 
