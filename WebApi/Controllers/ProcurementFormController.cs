@@ -28,26 +28,6 @@ namespace WebApi.Controllers
             var formId = await _mediator.Send(command);
             return Ok($@"FormID:{formId} created successfully!");
         }
-        [HttpPost("create/orderform")]
-        public async Task<IActionResult> CreateOrderForm([FromBody] CreateOrderFormCommand command)
-        {
-            var formId = await _mediator.Send(command);
-            return Ok(formId);
-        }
-
-        [HttpPost("create/receiveform")]
-        public async Task<IActionResult> CreateReceiveForm([FromBody] CreateReceiveFormCommand command)
-        {
-            var formId = await _mediator.Send(command);
-            return Ok(formId);
-        }
-
-        [HttpPost("create/payableform")]
-        public async Task<IActionResult> CreatePayableForm([FromBody] CreatePayableFormCommand command)
-        {
-            var formId = await _mediator.Send(command);
-            return Ok(formId);
-        }
 
         [HttpPost("create/signature/member")]
         public async Task<IActionResult> CreateFormSignatureMember([FromBody] CreateFormSignatureMemberCommand command)

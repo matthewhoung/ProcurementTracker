@@ -2,6 +2,7 @@
 using Domain.Entities.Forms;
 using Domain.Interfaces;
 using System.Data;
+using System.Transactions;
 
 namespace Infrastructure.Repositories
 {
@@ -47,9 +48,8 @@ namespace Infrastructure.Repositories
                 form.CreatedAt,
                 form.UpdatedAt
             };
-
             var formId = await _dbConnection.ExecuteScalarAsync<int>(writeCommand, parameters);
-            var orderFormId = await CreateOrderFormAsync(formId);
+            await CreateOrderFormAsync(formId);
             return formId;
         }
         public async Task<int> CreateOrderFormAsync(int formId)
