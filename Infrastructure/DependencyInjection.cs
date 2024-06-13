@@ -10,7 +10,8 @@ namespace Infrastructure
         public static IServiceCollection AddInfrastructure(this IServiceCollection services)
         {
             services.AddScoped<IFormRepository, FormRepository>();
-            services.AddScoped<IFileUploaderRepository, FileUploaderRepository>();      
+            services.AddScoped<IFileUploaderRepository, FileUploaderRepository>();
+            services.AddScoped<IGenericRepository, GenericRepository>();
 
             return services;
         }

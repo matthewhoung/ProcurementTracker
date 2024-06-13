@@ -5,11 +5,11 @@ using System.Data;
 
 namespace Infrastructure.Repositories
 {
-    public class GenereicRepository : IGenericRepository
+    public class GenericRepository : IGenericRepository
     {
         private readonly IDbConnection _dbConnection;
 
-        public GenereicRepository(IDbConnection dbConnection)
+        public GenericRepository(IDbConnection dbConnection)
         {
             _dbConnection = dbConnection;
         }
