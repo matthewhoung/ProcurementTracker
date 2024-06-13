@@ -15,8 +15,22 @@ namespace WebApi.Controllers
             _mediator = mediator;
         }
 
-        [HttpPost("mutual/department")]
-        public async Task<IActionResult> CreateDepartment([FromBody] CreateDepartmentCommand command)
+        [HttpPost("mutual/worker/class")]
+        public async Task<IActionResult> CreateWorkerClass([FromBody] CreateWorkerClassCommand command)
+        {
+            await _mediator.Send(command);
+            return Ok(command);
+        }
+
+        [HttpPost("mutual/worker/type")]
+        public async Task<IActionResult> CreateWorkerType([FromBody] CreateWorkerTypeCommand command)
+        {
+            await _mediator.Send(command);
+            return Ok(command);
+        }
+
+        [HttpPost("mutual/worker/team")]
+        public async Task<IActionResult> CreateWorkerTeam([FromBody] CreateWorkerTeamCommand command)
         {
             await _mediator.Send(command);
             return Ok(command);
@@ -45,6 +59,13 @@ namespace WebApi.Controllers
 
         [HttpPost("mutual/unit")]
         public async Task<IActionResult> CreateUnit([FromBody] CreateUnitClassCommand command)
+        {
+            await _mediator.Send(command);
+            return Ok(command);
+        }
+
+        [HttpPost("mutual/department")]
+        public async Task<IActionResult> CreateDepartment([FromBody] CreateDepartmentCommand command)
         {
             await _mediator.Send(command);
             return Ok(command);
