@@ -4,11 +4,11 @@ using MediatR;
 
 namespace Application.Generic.Handlers.Commands
 {
-    public class CreateDepartmentCommand : IRequest<int>
+    public class CreateDepartmentCommand : IRequest<string>
     {
         public Department Department { get; set; }
     }
-    public class CreateDepartmentHandler : IRequestHandler<CreateDepartmentCommand, int>
+    public class CreateDepartmentHandler : IRequestHandler<CreateDepartmentCommand, string>
     {
         private readonly IGenericRepository _genericRepository;
 
@@ -17,10 +17,10 @@ namespace Application.Generic.Handlers.Commands
             _genericRepository = genericRepository;
         }
 
-        public async Task<int> Handle(CreateDepartmentCommand request, CancellationToken cancellationToken)
+        public async Task<string> Handle(CreateDepartmentCommand request, CancellationToken cancellationToken)
         {
             await _genericRepository.CreateDepartmentAsync(request.Department);
-            return request.Department.DepartmentId;
+            return request.Department.DepartmentName;
         }
     }
 }

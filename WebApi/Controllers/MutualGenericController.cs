@@ -1,6 +1,5 @@
 ﻿using Application.Generic.Handlers.Commands;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers
@@ -16,11 +15,18 @@ namespace WebApi.Controllers
             _mediator = mediator;
         }
 
-        [HttpPost("Department")]
+        [HttpPost("mutual/department")]
         public async Task<IActionResult> CreateDepartment([FromBody] CreateDepartmentCommand command)
         {
-            var departmentId = await _mediator.Send(command);
-            return Ok(departmentId);
+            await _mediator.Send(command);
+            return Ok(command);
+        }
+
+        [HttpPost("mutual/payby")]
+        public async Task<IActionResult> CreatePayBy([FromBody] CreatePayByCommand command)
+        {
+            await _mediator.Send(command);
+            return Ok(command);
         }
     }
 }
