@@ -8,7 +8,7 @@ namespace Application.Generic.Handlers.Commands
     {
         public WorkerType WorkerType { get; set; }
     }
-    public class CreateWorkerTypeHandler
+    public class CreateWorkerTypeHandler : IRequestHandler<CreateWorkerTypeCommand, int>
     {
         private readonly IGenericRepository _genericRepository;
 

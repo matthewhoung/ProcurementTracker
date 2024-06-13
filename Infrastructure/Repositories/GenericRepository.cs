@@ -59,13 +59,20 @@ namespace Infrastructure.Repositories
         public async Task CreateRolesAsync(Roles roles)
         {
             var writeCommand = @"
-                INSERT INTO roles
-                    (role_name)
+                INSERT INTO forms_roles
+                    (
+                    role_name,
+                    role_description
+                    )
                 VALUES
-                    (@RoleName)";
+                    (
+                    @RoleName,
+                    @RoleDescription
+                    )";
             var parameters = new 
             { 
-                RoleName = roles.RoleName 
+                RoleName = roles.RoleName,
+                RoleDescription = roles.RoleDescription
             };
             await _dbConnection.ExecuteAsync(writeCommand, parameters);
         }
@@ -239,7 +246,7 @@ namespace Infrastructure.Repositories
                     role_name AS RoleName,
                     role_description AS RoleDescription
                 FROM
-                    roles";
+                    forms_roles";
             var roles = await _dbConnection.QueryAsync<Roles>(readCommand);
             return roles.AsList();
         }

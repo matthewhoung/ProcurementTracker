@@ -8,7 +8,7 @@ namespace Application.Generic.Handlers.Commands
     {
         public UnitClass UnitClass { get; set; }
     }
-    public class CreateUnitClassHandler
+    public class CreateUnitClassHandler : IRequestHandler<CreateUnitClassCommand, int>
     {
         private readonly IGenericRepository _genericRepository;
 
