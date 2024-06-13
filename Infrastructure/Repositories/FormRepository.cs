@@ -291,6 +291,33 @@ namespace Infrastructure.Repositories
             var form = await _dbConnection.QueryFirstOrDefaultAsync<Form>(readCommand, parameters);
             return form;
         }
+        public async Task<IEnumerable<int>> GetUserFormIdsAsync(int userId)
+        {
+            var readCommand = @"
+                SELECT 
+                    form_id 
+                FROM 
+                    order_signatures 
+                WHERE 
+                    user_id = @UserId
+                UNION
+                SELECT 
+                    form_id 
+                FROM 
+                    receive_signatures 
+                WHERE 
+                    user_id = @UserId
+                UNION
+                SELECT 
+                    form_id 
+                FROM 
+                    payable_signatures 
+                WHERE 
+                    user_id = @UserId";
+            var parameters = new { UserId = userId };
+            var formIds = await _dbConnection.QueryAsync<int>(readCommand, parameters);
+            return formIds.AsList();
+        }
         public async Task<string> GetFormStageAsync(int formId)
         {
             var readCommand = @"
@@ -452,7 +479,7 @@ namespace Infrastructure.Repositories
                 JOIN
                     {signatureTable} fsm ON f.id = fsm.form_id
                 JOIN
-                    roles r ON fsm.role_id = r.role_id
+                    forms_roles r ON fsm.role_id = r.role_id
                 WHERE
                     f.id = @FormId";
 
@@ -475,7 +502,7 @@ namespace Infrastructure.Repositories
                 FROM
                     {signatureTable} fsm
                 JOIN
-                    roles r ON fsm.role_id = r.role_id
+                    forms_roles r ON fsm.role_id = r.role_id
                 WHERE
                     fsm.is_checked = 0 AND fsm.form_id = @FormId";
 

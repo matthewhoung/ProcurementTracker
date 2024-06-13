@@ -69,6 +69,14 @@ namespace WebApi.Controllers
             return Ok(form);
         }
 
+        [HttpGet("get/{userId}/forms")]
+        public async Task<IActionResult> GetUserForms(int userId)
+        {
+            var query = new GetUserFormsQuery(userId);
+            var formInfos = await _mediator.Send(query);
+            return Ok(formInfos);
+        }
+
         [HttpGet("get/{formid}/stage")]
         public async Task<IActionResult> GetFormStage(int formid)
         {

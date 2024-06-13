@@ -26,6 +26,7 @@ namespace Domain.Interfaces
         // Read section
         Task<List<Form>> GetAllFormsAsync();
         Task<Form> GetFormByIdAsync(int formId);
+        Task<IEnumerable<int>> GetUserFormIdsAsync(int userId);
         Task<string> GetFormStageAsync(int formId);
         Task<string> GetFormStatusAsync(int formId);
         Task<List<FormStatusCount>> GetFormStatusCountsAsync();
