@@ -28,5 +28,26 @@ namespace WebApi.Controllers
             await _mediator.Send(command);
             return Ok(command);
         }
+
+        [HttpPost("mutual/paytype")]
+        public async Task<IActionResult> CreatePayType([FromBody] CreatePayTypeCommand command)
+        {
+            await _mediator.Send(command);
+            return Ok(command);
+        }
+
+        [HttpPost("mutual/roles")]
+        public async Task<IActionResult> CreateRoles([FromBody] CreateRolesCommand command)
+        {
+            await _mediator.Send(command);
+            return Ok(command);
+        }
+
+        [HttpPost("mutual/unit")]
+        public async Task<IActionResult> CreateUnit([FromBody] CreateUnitClassCommand command)
+        {
+            await _mediator.Send(command);
+            return Ok(command);
+        }
     }
 }
