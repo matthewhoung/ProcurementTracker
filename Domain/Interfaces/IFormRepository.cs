@@ -4,6 +4,12 @@ namespace Domain.Interfaces
 {
     public interface IFormRepository
     {
+        /*
+         * 加入發包價、核定價邏輯
+         * 加入金額計算邏輯
+         * 加入使用者歸屬的請採驗付(待簽、待審、待核、待付)邏輯
+         * 加入簽核退回邏輯
+         */
         // Create section
         Task<int> CreateFormAsync(Form form);
         Task<int> CreateFormDetailsAsync(IEnumerable<FormDetail> formDetails);
@@ -29,7 +35,7 @@ namespace Domain.Interfaces
         Task<List<FormDepartment>> GetFormDepartmentsByFormIdAsync(int formId);
         Task<List<FormSignatureMember>> GetFormSignatureMembersByFormIdAsync(int formId);
         Task<List<FormSignatureMember>> GetUnSignedMembersAsync(int formId);
-        Task<bool> GetAllSignaturesCheckedAsync(int formId);
+        Task<bool> GetAllSignaturesCheckedAsync(int formId);    
         Task<int> GetFormDetailSumTotalAsync(int formId);
         Task<List<FormAffiliate>> GetAllAffiliateFormsAsync(int formId);
 
