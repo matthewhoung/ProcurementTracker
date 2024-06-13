@@ -20,7 +20,7 @@ namespace Application.Generic.Handlers.Commands
         public async Task<int> Handle(CreateWorkerTypeCommand request, CancellationToken cancellationToken)
         {
             await _genericRepository.CreateWorkerTypeAsync(request.WorkerType);
-            return request.WorkerType.WokerTypeId;
+            return request.WorkerType.WorkerTypeId;
         }
     }
 }

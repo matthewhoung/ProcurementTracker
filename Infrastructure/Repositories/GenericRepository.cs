@@ -143,7 +143,7 @@ namespace Infrastructure.Repositories
                     (@WorkerTypeId, @WorkerClassId, @WorkerTypeName)";
             var parameters = new 
             { 
-                WorkerTypeId = workerType.WokerTypeId, 
+                WorkerTypeId = workerType.WorkerTypeId, 
                 WorkerClassId = workerType.WorkerClassId, 
                 WorkerTypeName = workerType.WorkerTypeName 
             };
@@ -234,8 +234,10 @@ namespace Infrastructure.Repositories
         public async Task<List<Roles>> GetAllRolesAsync()
         {
             var readCommand = @"
-                SELECT 
-                    role_name AS RoleName
+                SELECT
+                    role_id AS RoleId,
+                    role_name AS RoleName,
+                    role_description AS RoleDescription
                 FROM
                     roles";
             var roles = await _dbConnection.QueryAsync<Roles>(readCommand);

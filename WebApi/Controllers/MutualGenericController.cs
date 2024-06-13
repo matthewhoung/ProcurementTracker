@@ -1,4 +1,5 @@
 ﻿using Application.Generic.Handlers.Commands;
+using Application.Generic.Handlers.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,6 +16,9 @@ namespace WebApi.Controllers
             _mediator = mediator;
         }
 
+        /*
+         * Create section
+         */
         [HttpPost("mutual/worker/class")]
         public async Task<IActionResult> CreateWorkerClass([FromBody] CreateWorkerClassCommand command)
         {
@@ -69,6 +73,74 @@ namespace WebApi.Controllers
         {
             await _mediator.Send(command);
             return Ok(command);
+        }
+
+        /*
+         * Read section
+         */
+
+        [HttpGet("mutual/worker/class")]
+        public async Task<IActionResult> GetAllWorkerClasses()
+        {
+            var query = new GetAllWorkerClassesQuery();
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+
+        [HttpGet("mutual/worker/type")]
+        public async Task<IActionResult> GetAllWorkerTypes()
+        {
+            var query = new GetAllWorkerTypesQuery();
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+
+        [HttpGet("mutual/worker/team")]
+        public async Task<IActionResult> GetAllWorkerTeams()
+        {
+            var query = new GetAllWorkerTeamsQuery();
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+
+        [HttpGet("mutual/payby")]
+        public async Task<IActionResult> GetAllPayBys()
+        {
+            var query = new GetAllPayByQuery();
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+
+        [HttpGet("mutual/paytype")]
+        public async Task<IActionResult> GetAllPayTypes()
+        {
+            var query = new GetAllPayTypesQuery();
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+
+        [HttpGet("mutual/departments")]
+        public async Task<IActionResult> GetAllDepartments()
+        {
+            var query = new GetAllDepartmentsQuery();
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+
+        [HttpGet("mutual/roles")]
+        public async Task<IActionResult> GetAllRoles()
+        {
+            var query = new GetAllRolesQuery();
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+
+        [HttpGet("mutual/unit")]
+        public async Task<IActionResult> GetAllUnits()
+        {
+            var query = new GetAllUnitsQuery();
+            var result = await _mediator.Send(query);
+            return Ok(result);
         }
     }
 }
