@@ -38,7 +38,7 @@ namespace Domain.Interfaces
         Task<List<FormSignatureMember>> GetUnSignedMembersAsync(int formId);
         Task<bool> GetAllSignaturesCheckedAsync(int formId);    
         Task<int> GetFormDetailSumTotalAsync(int formId);
-        Task<List<FormAffiliate>> GetAllAffiliateFormsAsync(int formId);
+        Task<IEnumerable<FormAffiliate>> GetAllAffiliateFormsAsync(int formId);
 
         // Update section
         Task UpdateSignatureAsync(FormSignatureMember formSignatureMemeber);

@@ -550,7 +550,7 @@ namespace Infrastructure.Repositories
             var formStatusCounts = await _dbConnection.QueryAsync<FormStatusCount>(query);
             return formStatusCounts.ToList();
         }
-        public async Task<List<FormAffiliate>> GetAllAffiliateFormsAsync(int formId)
+        public async Task<IEnumerable<FormAffiliate>> GetAllAffiliateFormsAsync(int formId)
         {
             var readCommand = @"
                 SELECT

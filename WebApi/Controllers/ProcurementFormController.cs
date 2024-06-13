@@ -49,6 +49,7 @@ namespace WebApi.Controllers
             var affiliateId = await _mediator.Send(command);
             return Ok(affiliateId);
         }
+
         /*
          * Read section
          */

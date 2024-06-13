@@ -1,5 +1,5 @@
 ﻿using Application.DTOs;
-using Domain.Interfaces;
+using Application.Services;
 using MediatR;
 
 namespace Application.Forms.Handlers.Queries
@@ -13,51 +13,19 @@ namespace Application.Forms.Handlers.Queries
             FormId = formId;
         }
     }
+
     public class GetFormByIdHandler : IRequestHandler<GetFormByIdQuery, FormInfoDto>
     {
-        private readonly IFormRepository _formRepository;
-        private readonly IFileUploaderRepository _fileUploaderRepository;
+        private readonly FormService _formService;
 
-        public GetFormByIdHandler(IFormRepository formRepository, IFileUploaderRepository fileUploaderRepository)
+        public GetFormByIdHandler(FormService formService)
         {
-            _formRepository = formRepository;
-            _fileUploaderRepository = fileUploaderRepository;
+            _formService = formService;
         }
 
         public async Task<FormInfoDto> Handle(GetFormByIdQuery request, CancellationToken cancellationToken)
         {
-            var form = await _formRepository.GetFormByIdAsync(request.FormId);
-            if (form == null) return null;
-
-            var details = await _formRepository.GetFormDetailsByFormIdAsync(request.FormId);
-            var payments = await _formRepository.GetFormPaymentInfoByFormIdAsync(request.FormId);
-            var workers = await _formRepository.GetFormWorkerListByFormIdAsync(request.FormId);
-            var departments = await _formRepository.GetFormDepartmentsByFormIdAsync(request.FormId);
-            var signatures = await _formRepository.GetFormSignatureMembersByFormIdAsync(request.FormId);
-            var filePaths = await _fileUploaderRepository.GetFilePathAsync(request.FormId);
-            var status = await _formRepository.GetFormStatusAsync(request.FormId);
-            var affiliateForms = await _formRepository.GetAllAffiliateFormsAsync(request.FormId);
-
-            var formInfoDto = new FormInfoDto
-            {
-                Id = form.Id,
-                ProjectId = form.ProjectId,
-                Title = form.Title,
-                Description = form.Description,
-                Stage = form.Stage,
-                Status = status,
-                CreatedAt = form.CreatedAt,
-                UpdatedAt = form.UpdatedAt,
-                Details = details,
-                Signatures = signatures,
-                Workers = workers,
-                Payments = payments,
-                Departments = departments,
-                FilePaths = filePaths,
-                Affiliates = affiliateForms
-            };
-
-            return formInfoDto;
+            return await _formService.GetFormInfoRecursiveAsync(request.FormId);
         }
     }
 }

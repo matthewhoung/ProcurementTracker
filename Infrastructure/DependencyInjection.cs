@@ -1,4 +1,5 @@
-﻿using Domain.Interfaces;
+﻿using Application.Services;
+using Domain.Interfaces;
 using Infrastructure.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -12,6 +13,7 @@ namespace Infrastructure
             services.AddScoped<IFormRepository, FormRepository>();
             services.AddScoped<IFileUploaderRepository, FileUploaderRepository>();
             services.AddScoped<IGenericRepository, GenericRepository>();
+            services.AddScoped<FormService>();
 
             return services;
         }
