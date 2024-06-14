@@ -9,6 +9,8 @@ namespace Domain.Interfaces
          * 加入金額計算邏輯
          * 加入使用者歸屬的請採驗付(待簽、待審、待核、待付)邏輯
          * 加入簽核退回邏輯
+         * 簽核密碼
+         * 階段性驗收:group by
          */
         // Create section
         Task<int> CreateFormAsync(Form form);
