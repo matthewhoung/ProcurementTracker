@@ -498,9 +498,12 @@ namespace Infrastructure.Repositories
                     fsm.user_id AS UserId,
                     r.role_id AS RoleId,
                     r.role_name AS RoleName,
+                    f.stage AS Stage,
                     fsm.is_checked AS IsChecked
                 FROM
                     {signatureTable} fsm
+                JOIN
+                    forms f ON fsm.form_id = f.id
                 JOIN
                     forms_roles r ON fsm.role_id = r.role_id
                 WHERE
