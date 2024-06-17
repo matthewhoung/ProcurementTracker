@@ -1,15 +1,13 @@
-﻿using Domain.Entities.Commons.FileUploader;
+﻿using Application.Uploaders.DTOs;
+using Domain.Entities.Commons.FileUploader;
 using Domain.Interfaces;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 
 namespace Application.Uploaders.Handlers.Commands
 {
     public class CreateFileUploaderCommand : IRequest<int>
     {
-        public int FormId { get; set; }
-        public int UploaderId { get; set; }
-        public IFormFile File { get; set; }
+        public CreateFileUploaderDto FileUploaderDto { get; set; }
     }
     public class CreateFileUploaderHandler : IRequestHandler<CreateFileUploaderCommand, int>
     {
@@ -24,11 +22,11 @@ namespace Application.Uploaders.Handlers.Commands
         {
             var fileUploader = new FileUploader
             {
-                FormId = request.FormId,
-                UploaderId = request.UploaderId
+                FormId = request.FileUploaderDto.FormId,
+                UploaderId = request.FileUploaderDto.UploaderId
             };
 
-            var fileId = await _fileUploaderRepository.CreateFileUrlAsync(fileUploader, request.File);
+            var fileId = await _fileUploaderRepository.CreateFileUrlAsync(fileUploader, request.FileUploaderDto.File);
             return fileId;
         }
     }

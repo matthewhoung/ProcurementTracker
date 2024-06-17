@@ -80,18 +80,7 @@ namespace Infrastructure.Repositories
                     WHERE form_id = @FromId";
             var parameters = new { FromId = formId };
             var filePath = await _dbConnection.QueryAsync<FileUploader>(readCommand, parameters);
-            return filePath.ToList();
-        }
-
-        public async Task<string> DeleteFilePathAsync(int fileId)
-        {
-            var query = @"
-                    DELETE FROM forms_filepaths
-                    OUTPUT DELETED.file_path
-                    WHERE file_id = @FileId";
-            var parameters = new { FileId = fileId };
-            var filePath = await _dbConnection.QuerySingleOrDefaultAsync<string>(query, parameters);
-            return filePath;
+            return filePath.AsList();
         }
 
         private async Task<string> GenerateFilePath(int formId, IFormFile file)

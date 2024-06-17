@@ -12,7 +12,7 @@ namespace Application.Forms.Handlers.Queries
             FormId = formId;
         }
     }
-    public class GetFormStatusHandler
+    public class GetFormStatusHandler : IRequestHandler<GetFormStatusQuery, string>
     {
         private readonly IFormRepository _formRepository;
 

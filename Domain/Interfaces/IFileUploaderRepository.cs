@@ -7,6 +7,5 @@ namespace Domain.Interfaces
     {
         Task<int> CreateFileUrlAsync(FileUploader uploaderId, IFormFile file);
         Task<List<FileUploader>> GetFilePathAsync(int formId);
-        Task<string> DeleteFilePathAsync(int fileId);
     }
 }

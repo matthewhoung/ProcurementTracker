@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("mutual/data")]
     [ApiController]
     public class MutualGenericController : ControllerBase
     {
@@ -19,56 +19,56 @@ namespace WebApi.Controllers
         /*
          * Create section
          */
-        [HttpPost("mutual/worker/class")]
+        [HttpPost("worker/class")]
         public async Task<IActionResult> CreateWorkerClass([FromBody] CreateWorkerClassCommand command)
         {
             await _mediator.Send(command);
             return Ok(command);
         }
 
-        [HttpPost("mutual/worker/type")]
+        [HttpPost("worker/type")]
         public async Task<IActionResult> CreateWorkerType([FromBody] CreateWorkerTypeCommand command)
         {
             await _mediator.Send(command);
             return Ok(command);
         }
 
-        [HttpPost("mutual/worker/team")]
+        [HttpPost("worker/team")]
         public async Task<IActionResult> CreateWorkerTeam([FromBody] CreateWorkerTeamCommand command)
         {
             await _mediator.Send(command);
             return Ok(command);
         }
 
-        [HttpPost("mutual/payby")]
+        [HttpPost("payby")]
         public async Task<IActionResult> CreatePayBy([FromBody] CreatePayByCommand command)
         {
             await _mediator.Send(command);
             return Ok(command);
         }
 
-        [HttpPost("mutual/paytype")]
+        [HttpPost("paytype")]
         public async Task<IActionResult> CreatePayType([FromBody] CreatePayTypeCommand command)
         {
             await _mediator.Send(command);
             return Ok(command);
         }
 
-        [HttpPost("mutual/roles")]
+        [HttpPost("roles")]
         public async Task<IActionResult> CreateRoles([FromBody] CreateRolesCommand command)
         {
             await _mediator.Send(command);
             return Ok(command);
         }
 
-        [HttpPost("mutual/unit")]
+        [HttpPost("unit")]
         public async Task<IActionResult> CreateUnit([FromBody] CreateUnitClassCommand command)
         {
             await _mediator.Send(command);
             return Ok(command);
         }
 
-        [HttpPost("mutual/department")]
+        [HttpPost("department")]
         public async Task<IActionResult> CreateDepartment([FromBody] CreateDepartmentCommand command)
         {
             await _mediator.Send(command);
@@ -79,7 +79,7 @@ namespace WebApi.Controllers
          * Read section
          */
 
-        [HttpGet("mutual/worker/class")]
+        [HttpGet("worker/class")]
         public async Task<IActionResult> GetAllWorkerClasses()
         {
             var query = new GetAllWorkerClassesQuery();
@@ -87,7 +87,7 @@ namespace WebApi.Controllers
             return Ok(result);
         }
 
-        [HttpGet("mutual/worker/type")]
+        [HttpGet("worker/type")]
         public async Task<IActionResult> GetAllWorkerTypes()
         {
             var query = new GetAllWorkerTypesQuery();
@@ -95,7 +95,7 @@ namespace WebApi.Controllers
             return Ok(result);
         }
 
-        [HttpGet("mutual/worker/team")]
+        [HttpGet("worker/team")]
         public async Task<IActionResult> GetAllWorkerTeams()
         {
             var query = new GetAllWorkerTeamsQuery();
@@ -103,7 +103,7 @@ namespace WebApi.Controllers
             return Ok(result);
         }
 
-        [HttpGet("mutual/payby")]
+        [HttpGet("payby")]
         public async Task<IActionResult> GetAllPayBys()
         {
             var query = new GetAllPayByQuery();
@@ -111,7 +111,7 @@ namespace WebApi.Controllers
             return Ok(result);
         }
 
-        [HttpGet("mutual/paytype")]
+        [HttpGet("paytype")]
         public async Task<IActionResult> GetAllPayTypes()
         {
             var query = new GetAllPayTypesQuery();
@@ -119,7 +119,7 @@ namespace WebApi.Controllers
             return Ok(result);
         }
 
-        [HttpGet("mutual/departments")]
+        [HttpGet("departments")]
         public async Task<IActionResult> GetAllDepartments()
         {
             var query = new GetAllDepartmentsQuery();
@@ -127,7 +127,7 @@ namespace WebApi.Controllers
             return Ok(result);
         }
 
-        [HttpGet("mutual/roles")]
+        [HttpGet("roles")]
         public async Task<IActionResult> GetAllRoles()
         {
             var query = new GetAllRolesQuery();
@@ -135,7 +135,7 @@ namespace WebApi.Controllers
             return Ok(result);
         }
 
-        [HttpGet("mutual/unit")]
+        [HttpGet("unit")]
         public async Task<IActionResult> GetAllUnits()
         {
             var query = new GetAllUnitsQuery();

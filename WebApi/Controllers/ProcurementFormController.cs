@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers
 {
-    [Route("api/form")]
+    [Route("procurement/form")]
     [ApiController]
     public class ProcurementFormController : ControllerBase
     {
@@ -22,7 +22,7 @@ namespace WebApi.Controllers
          * Create section
          */
 
-        [HttpPost("create")]
+        [HttpPost("create/form")]
         public async Task<IActionResult> CreateForm([FromBody] CreateFormCommand command)
         {
             var formId = await _mediator.Send(command);
@@ -54,7 +54,7 @@ namespace WebApi.Controllers
          * Read section
          */
 
-        [HttpGet("get/all")]
+        [HttpGet("get/allforms")]
         public async Task<IActionResult> GetAllForms()
         {
             var query = new GetAllFormsQuery();

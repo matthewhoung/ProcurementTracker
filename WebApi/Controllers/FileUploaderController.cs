@@ -1,4 +1,5 @@
-﻿using Application.Uploaders.Handlers.Commands;
+﻿using Application.Uploaders.DTOs;
+using Application.Uploaders.Handlers.Commands;
 using Application.Uploaders.Handlers.Queries;
 using Domain.Entities.Commons.FileUploader;
 using MediatR;
@@ -7,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace WebApi.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("fileuploader")]
     public class FileUploaderController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -17,20 +18,18 @@ namespace WebApi.Controllers
             _mediator = mediator;
         }
 
-        [HttpPost("{formId}")]
-        public async Task<ActionResult<int>> UploadFile(int formId, int uploaderId, IFormFile file)
+        [HttpPost("upload")]
+        public async Task<ActionResult<int>> UploadFile([FromForm] CreateFileUploaderDto dto)
         {
             var command = new CreateFileUploaderCommand
             {
-                FormId = formId,
-                UploaderId = uploaderId,
-                File = file
+                FileUploaderDto = dto
             };
             var fileId = await _mediator.Send(command);
             return Ok(fileId);
         }
 
-        [HttpGet("{formId}")]
+        [HttpGet("download")]
         public async Task<ActionResult<List<FileUploader>>> GetFilePaths(int formId)
         {
             var query = new GetFileUploaderQuery(formId);
