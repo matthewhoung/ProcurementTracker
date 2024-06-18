@@ -7,10 +7,9 @@ namespace Domain.Interfaces
         /*
          * 加入發包價、核定價邏輯
          * 加入金額計算邏輯
-         * 加入使用者歸屬的請採驗付(待簽、待審、待核、待付)邏輯
-         * 加入簽核退回邏輯
-         * 簽核密碼
-         * 階段性驗收:group by
+         * 取得Project Name
+         * 將GetUserFormIdAsync分成status and stage
+         * 將FileUploader存儲路徑改為GCStorage
          */
         // Create section
         Task<int> CreateFormAsync(Form form);
