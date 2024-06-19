@@ -46,13 +46,18 @@ namespace Infrastructure.Repositories
         {
             var writeCommand = @"
                 INSERT INTO pay_types
-                    (pay_type_id, pay_type_name)
+                    (pay_type_id, 
+                    pay_type_name,
+                    pay_type_color)
                 VALUES
-                    (@PayTypeId, @PayTypeName)";
+                    (@PayTypeId, 
+                    @PayTypeName,
+                    @PayTypeColor)";
             var parameters = new 
             { 
                 PayTypeId = payType.PayTypeId, 
-                PayTypeName = payType.PayTypeName 
+                PayTypeName = payType.PayTypeName,
+                PayTypeColor = payType.PayTypeColor
             };
             await _dbConnection.ExecuteAsync(writeCommand, parameters);
         }
@@ -231,7 +236,8 @@ namespace Infrastructure.Repositories
             var readCommand = @"
                 SELECT 
                     pay_type_id AS PayTypeId,
-                    pay_type_name AS PayTypeName
+                    pay_type_name AS PayTypeName,
+                    pay_type_color AS PayTypeColor
                 FROM
                     pay_types";
             var payTypes = await _dbConnection.QueryAsync<PayType>(readCommand);

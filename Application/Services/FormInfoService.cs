@@ -3,12 +3,12 @@ using Domain.Interfaces;
 
 namespace Application.Services
 {
-    public class FormService
+    public class FormInfoService
     {
         private readonly IFormRepository _formRepository;
         private readonly IFileUploaderRepository _fileUploaderRepository;
 
-        public FormService(IFormRepository formRepository, IFileUploaderRepository fileUploaderRepository)
+        public FormInfoService(IFormRepository formRepository, IFileUploaderRepository fileUploaderRepository)
         {
             _formRepository = formRepository;
             _fileUploaderRepository = fileUploaderRepository;
@@ -32,6 +32,7 @@ namespace Application.Services
             {
                 Id = form.Id,
                 ProjectId = form.ProjectId,
+                ProjectName = form.ProjectName,
                 Title = form.Title,
                 Description = form.Description,
                 Stage = form.Stage,

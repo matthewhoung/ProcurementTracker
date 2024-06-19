@@ -260,15 +260,18 @@ namespace Infrastructure.Repositories
         {
             var readCommand = @"
                 SELECT
-                    id AS Id,
-                    project_id AS ProjectId,
-                    title AS Title,
-                    description AS Description,
-                    stage AS Stage,
-                    created_at AS CreatedAt,
-                    updated_at AS UpdatedAt
+                    f.id AS Id,
+                    f.project_id AS ProjectId,
+                    f.title AS Title,
+                    f.description AS Description,
+                    f.stage AS Stage,
+                    f.created_at AS CreatedAt,
+                    f.updated_at AS UpdatedAt,
+                    p.pjname AS ProjectName
                 FROM
-                    forms";
+                    forms f
+                INNER JOIN
+                    project p ON f.project_id = p.id";
             var forms = await _dbConnection.QueryAsync<Form>(readCommand);
             return forms.AsList();
         }
@@ -276,17 +279,20 @@ namespace Infrastructure.Repositories
         {
             var readCommand = @"
                 SELECT
-                    id AS Id,
-                    project_id AS ProjectId,
-                    title AS Title,
-                    description AS Description,
-                    stage AS Stage,
-                    created_at AS CreatedAt,
-                    updated_at AS UpdatedAt
+                    f.id AS Id,
+                    f.project_id AS ProjectId,
+                    f.title AS Title,
+                    f.description AS Description,
+                    f.stage AS Stage,
+                    f.created_at AS CreatedAt,
+                    f.updated_at AS UpdatedAt,
+                    p.pjname AS ProjectName
                 FROM
-                    forms
+                    forms f
+                INNER JOIN
+                    project p ON f.project_id = p.id
                 WHERE
-                    id = @FormId";
+                    f.id = @FormId";
             var parameters = new { FormId = formId };
             var form = await _dbConnection.QueryFirstOrDefaultAsync<Form>(readCommand, parameters);
             return form;
@@ -551,7 +557,7 @@ namespace Infrastructure.Repositories
                 GROUP BY status;";
 
             var formStatusCounts = await _dbConnection.QueryAsync<FormStatusCount>(query);
-            return formStatusCounts.ToList();
+            return formStatusCounts.AsList();
         }
         public async Task<IEnumerable<FormAffiliate>> GetAllAffiliateFormsAsync(int formId)
         {
@@ -700,7 +706,18 @@ namespace Infrastructure.Repositories
             var parameters = new { FormId = formId, PaymentAmount = detailSumTotal };
             await _dbConnection.ExecuteAsync(updateCommand, parameters);
         }
-
+        public async Task UpdateArchiveStatus(int formId, int userId)
+        {
+            var updateCommand = @"
+                UPDATE
+                    forms
+                SET
+                    stage = 'archived'
+                WHERE
+                    id = @FormId";
+            var parameters = new { FormId = formId };
+            await _dbConnection.ExecuteAsync(updateCommand, parameters);
+        }
         // Delete section
 
         public async Task DeleteFormAsync(int formId)

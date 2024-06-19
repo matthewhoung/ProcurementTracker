@@ -7,9 +7,8 @@ namespace Domain.Interfaces
         /*
          * 加入發包價、核定價邏輯
          * 加入金額計算邏輯
-         * 取得Project Name
-         * 將GetUserFormIdAsync分成status and stage
          * 將FileUploader存儲路徑改為GCStorage
+         * Forms新增廢棄狀態as "archived"
          */
         // Create section
         Task<int> CreateFormAsync(Form form);
@@ -49,6 +48,7 @@ namespace Domain.Interfaces
         Task UpdateFormDetailisCheckAsync(int formId, int detailId);
         Task UpdatePaymentAmountAsync(int formId);
         Task UpdatePaymentAsync(FormPayment formPayment);
+        Task UpdateArchiveStatus(int formId,int userId);
 
         // Delete section
         Task DeleteFormAsync(int formId);

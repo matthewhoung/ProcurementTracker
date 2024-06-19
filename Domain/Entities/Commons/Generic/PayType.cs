@@ -4,5 +4,6 @@
     {
         public int PayTypeId { get; set; }
         public string PayTypeName { get; set; }
+        public string PayTypeColor { get; set; }
     }
 }

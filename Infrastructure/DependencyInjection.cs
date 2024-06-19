@@ -13,7 +13,8 @@ namespace Infrastructure
             services.AddScoped<IFormRepository, FormRepository>();
             services.AddScoped<IFileUploaderRepository, FileUploaderRepository>();
             services.AddScoped<IGenericRepository, GenericRepository>();
-            services.AddScoped<FormService>();
+            services.AddScoped<FormInfoService>();
+            services.AddScoped<FilteredFormsService>();
 
             return services;
         }

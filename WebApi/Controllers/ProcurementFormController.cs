@@ -1,21 +1,24 @@
 ﻿using Application.DTOs;
 using Application.Forms.Handlers.Commands;
 using Application.Forms.Handlers.Queries;
+using Application.Services;
 using Domain.Entities.Forms;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers
 {
-    [Route("procurement/form")]
+    [Route("api/procurement/form")]
     [ApiController]
     public class ProcurementFormController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly FilteredFormsService _filteredFormsService;
 
-        public ProcurementFormController(IMediator mediator)
+        public ProcurementFormController(IMediator mediator, FilteredFormsService filteredFormsService)
         {
             _mediator = mediator;
+            _filteredFormsService = filteredFormsService;
         }
 
         /*
@@ -53,6 +56,20 @@ namespace WebApi.Controllers
         /*
          * Read section
          */
+
+        [HttpGet("get/all/forms/list")]
+        public async Task<ActionResult<List<FormInfoDto>>> GetForms([FromQuery] int? formId, [FromQuery] int? userId, [FromQuery] string? stage, [FromQuery] string? status)
+        {
+            try
+            {
+                var forms = await _filteredFormsService.GetAllFormInOneAsync(formId, userId, stage, status);
+                return Ok(forms);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
+        }
 
         [HttpGet("get/allforms")]
         public async Task<IActionResult> GetAllForms()

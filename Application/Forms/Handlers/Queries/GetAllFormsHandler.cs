@@ -12,9 +12,9 @@ namespace Application.Forms.Handlers.Queries
     public class GetAllFormsHandler : IRequestHandler<GetAllFormsQuery, List<FormInfoDto>>
     {
         private readonly IFormRepository _formRepository;
-        private readonly FormService _formService;
+        private readonly FormInfoService _formService;
 
-        public GetAllFormsHandler(IFormRepository formRepository, FormService formService)
+        public GetAllFormsHandler(IFormRepository formRepository, FormInfoService formService)
         {
             _formRepository = formRepository;
             _formService = formService;

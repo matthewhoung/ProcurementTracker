@@ -16,9 +16,9 @@ namespace Application.Forms.Handlers.Queries
 
     public class GetFormByIdHandler : IRequestHandler<GetFormByIdQuery, FormInfoDto>
     {
-        private readonly FormService _formService;
+        private readonly FormInfoService _formService;
 
-        public GetFormByIdHandler(FormService formService)
+        public GetFormByIdHandler(FormInfoService formService)
         {
             _formService = formService;
         }
