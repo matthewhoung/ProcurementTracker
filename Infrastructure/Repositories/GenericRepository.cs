@@ -181,7 +181,9 @@ namespace Infrastructure.Repositories
                 SELECT 
                     worker_type_id AS WorkerTypeId,
                     worker_class_id AS WorkerClassId,
-                    worker_type_name AS WorkerTypeName
+                    worker_type_name AS WorkerTypeName,
+                    worker_type_sort AS WorkerTypeSort,
+                    worker_type_icon AS WorkerTypeIcon
                 FROM 
                     worker_types";
             var workerTypes = await _dbConnection.QueryAsync<WorkerType>(readCommand);
@@ -267,6 +269,137 @@ namespace Infrastructure.Repositories
                     units";
             var units = await _dbConnection.QueryAsync<UnitClass>(readCommand);
             return units.AsList();
+        }
+
+        public async Task<List<Project>> GetAllProjectsAsync()
+        {
+            var readCommand = @"
+                SELECT 
+                    id AS Id,
+                    pjname AS ProjectName,
+                    level AS Level,
+                    sort AS Sort,
+                    status AS Status,
+                    color AS Color
+                FROM
+                    project";
+            var projects = await _dbConnection.QueryAsync<Project>(readCommand);
+            return projects.AsList();
+        }
+        public async Task<List<Workers>> GetAllWorkerClassWithTypesAsync()
+        {
+            var readCommand = @"
+            SELECT 
+                wc.worker_class_id AS WorkerClassId,
+                wc.worker_class_name AS WorkerClassName,
+                wt.worker_type_id AS WorkerTypeId,
+                wt.worker_class_id AS WorkerClassId,
+                wt.worker_type_name AS WorkerTypeName,
+                wt.worker_type_sort AS WorkerTypeSort,
+                wt.worker_type_icon AS WorkerTypeIcon
+            FROM
+                worker_classes wc
+            LEFT JOIN
+                worker_types wt ON wc.worker_class_id = wt.worker_class_id
+            ORDER BY
+                wt.worker_type_sort asc ";
+
+            var lookup = new Dictionary<int, Workers>();
+
+            var workers = await _dbConnection.QueryAsync<Workers, WorkerType, Workers>(
+                readCommand,
+                (workerClass, workerType) =>
+                {
+                    if (!lookup.TryGetValue(workerClass.WorkerClassId, out var workerClassEntry))
+                    {
+                        workerClassEntry = workerClass;
+                        workerClassEntry.WorkerTypes = new List<WorkerType>();
+                        lookup.Add(workerClass.WorkerClassId, workerClassEntry);
+                    }
+
+                    if (workerType != null)
+                    {
+                        workerClassEntry.WorkerTypes.Add(workerType);
+                    }
+
+                    return workerClassEntry;
+                },
+                splitOn: "WorkerTypeId"
+            );
+
+            return lookup.Values.AsList();
+        }
+
+        // Update section
+
+        public async Task UpdateWorkerTypeSortOrderAsync(List<WorkerTypeSort> workerTypeSortOrders)
+        {
+            if (_dbConnection.State == ConnectionState.Closed)
+            {
+                _dbConnection.Open();
+            }
+
+            using (var transaction = _dbConnection.BeginTransaction())
+            {
+                try
+                {
+                    foreach (var sortOrder in workerTypeSortOrders)
+                    {
+                        var currentSortOrder = await _dbConnection.ExecuteScalarAsync<int>(
+                            "SELECT worker_type_sort FROM worker_types WHERE worker_type_id = @WorkerTypeId",
+                            new { WorkerTypeId = sortOrder.TypeId },
+                            transaction
+                        );
+
+                        if (currentSortOrder == sortOrder.TypeSort)
+                            continue;
+
+                        string adjustSortOrderQuery;
+                        if (currentSortOrder < sortOrder.TypeSort)
+                        {
+                            // Shift down the worker types between currentSortOrder and newSortOrder
+                            adjustSortOrderQuery = @"
+                            UPDATE worker_types 
+                            SET worker_type_sort = worker_type_sort - 1 
+                            WHERE worker_type_sort > @CurrentSortOrder 
+                              AND worker_type_sort <= @NewSortOrder";
+                        }
+                        else
+                        {
+                            // Shift up the worker types between newSortOrder and currentSortOrder
+                            adjustSortOrderQuery = @"
+                            UPDATE worker_types 
+                            SET worker_type_sort = worker_type_sort + 1 
+                            WHERE worker_type_sort >= @NewSortOrder 
+                              AND worker_type_sort < @CurrentSortOrder";
+                        }
+
+                        await _dbConnection.ExecuteAsync(
+                            adjustSortOrderQuery,
+                            new { CurrentSortOrder = currentSortOrder, NewSortOrder = sortOrder.TypeSort },
+                            transaction
+                        );
+
+                        // Update the worker type to the new sort order
+                        await _dbConnection.ExecuteAsync(
+                            "UPDATE worker_types SET worker_type_sort = @WorkerTypeSort WHERE worker_type_id = @WorkerTypeId",
+                            new { WorkerTypeSort = sortOrder.TypeSort, WorkerTypeId = sortOrder.TypeId },
+                            transaction
+                        );
+                    }
+
+                    transaction.Commit();
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    throw;
+                }
+                finally
+                {
+                    _dbConnection.Close();
+                }
+            }
         }
     }
 }

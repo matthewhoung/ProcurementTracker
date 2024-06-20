@@ -22,5 +22,10 @@ namespace Domain.Interfaces
         Task<List<PayType>> GetAllPayTypesAsync();
         Task<List<UnitClass>> GetAllUnitsAsync();
         Task<List<Roles>> GetAllRolesAsync();
+        Task<List<Project>> GetAllProjectsAsync();
+        Task<List<Workers>> GetAllWorkerClassWithTypesAsync();
+
+        // Update section
+        Task UpdateWorkerTypeSortOrderAsync(List<WorkerTypeSort> workerTypeSortOrders);
     }
 }

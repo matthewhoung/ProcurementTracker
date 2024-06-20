@@ -4,22 +4,22 @@ using MediatR;
 
 namespace Application.Generic.Handlers.Queries
 {
-    public class GetAllWorkerClassesQuery : IRequest<List<WorkerClass>>
+    public class GetAllWorkersQuery : IRequest<List<Workers>>
     {
     }
-        
-    public class GetAllWorkerClassesHandler : IRequestHandler<GetAllWorkerClassesQuery, List<WorkerClass>>
+
+    public class GetAllWorkersHandler : IRequestHandler<GetAllWorkersQuery, List<Workers>>
     {
         private readonly IGenericRepository _genericRepository;
 
-        public GetAllWorkerClassesHandler(IGenericRepository genericRepository)
+        public GetAllWorkersHandler(IGenericRepository genericRepository)
         {
             _genericRepository = genericRepository;
         }
 
-        public async Task<List<WorkerClass>> Handle(GetAllWorkerClassesQuery request, CancellationToken cancellationToken)
+        public async Task<List<Workers>> Handle(GetAllWorkersQuery request, CancellationToken cancellationToken)
         {
-            return await _genericRepository.GetAllWorkerClassesAsync();
+            return await _genericRepository.GetAllWorkerClassWithTypesAsync();
         }
     }
 }

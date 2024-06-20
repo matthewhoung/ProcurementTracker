@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers
 {
-    [Route("mutual/data")]
+    [Route("mutual")]
     [ApiController]
     public class MutualGenericController : ControllerBase
     {
@@ -79,10 +79,10 @@ namespace WebApi.Controllers
          * Read section
          */
 
-        [HttpGet("worker/class")]
+        [HttpGet("worker/list")]
         public async Task<IActionResult> GetAllWorkerClasses()
         {
-            var query = new GetAllWorkerClassesQuery();
+            var query = new GetAllWorkersQuery();
             var result = await _mediator.Send(query);
             return Ok(result);
         }
@@ -141,6 +141,20 @@ namespace WebApi.Controllers
             var query = new GetAllUnitsQuery();
             var result = await _mediator.Send(query);
             return Ok(result);
+        }
+        [HttpGet("project/list")]
+        public async Task<IActionResult> GetAllProjects()
+        {
+            var query = new GetAllProjectsQuery();
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+
+        [HttpPut("worker/type/sort")]
+        public async Task<IActionResult> UpdateWorkerTypeSortOrder([FromBody] UpdateWorkerTypeSortOrderCommand command)
+        {
+            await _mediator.Send(command);
+            return Ok(command);
         }
     }
 }
