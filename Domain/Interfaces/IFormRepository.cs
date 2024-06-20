@@ -9,6 +9,7 @@ namespace Domain.Interfaces
          * 加入蹦表號碼
          * Forms新增廢棄狀態as "archived"
          */
+
         // Create section
         Task<int> CreateFormAsync(Form form);
         Task<int> CreateFormDetailsAsync(IEnumerable<FormDetail> formDetails);
