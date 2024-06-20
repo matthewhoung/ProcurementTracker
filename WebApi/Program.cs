@@ -3,10 +3,14 @@ using Infrastructure;
 using Serilog;
 using WebApi.Middleware;
 using Infrastructure.Configurations;
+using Domain.Entities.Commons.Generic;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddMySQLConnection(builder.Configuration);
+
+builder.Services.Configure<GoogleCloudStorageOptions>(
+    builder.Configuration.GetSection("GoogleCloudStorage"));
 
 builder.Services.AddControllers()
     .AddNewtonsoftJson(options =>

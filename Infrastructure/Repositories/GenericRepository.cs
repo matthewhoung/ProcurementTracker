@@ -302,7 +302,7 @@ namespace Infrastructure.Repositories
             LEFT JOIN
                 worker_types wt ON wc.worker_class_id = wt.worker_class_id
             ORDER BY
-                wt.worker_type_sort asc ";
+                wc.worker_class_id, wt.worker_type_sort asc ";
 
             var lookup = new Dictionary<int, Workers>();
 
@@ -345,23 +345,32 @@ namespace Infrastructure.Repositories
                 {
                     foreach (var sortOrder in workerTypeSortOrders)
                     {
-                        var currentSortOrder = await _dbConnection.ExecuteScalarAsync<int>(
-                            "SELECT worker_type_sort FROM worker_types WHERE worker_type_id = @WorkerTypeId",
+                        // Fetch the worker_class_id for the current worker_type_id
+                        var workerClassId = await _dbConnection.ExecuteScalarAsync<int>(
+                            "SELECT worker_class_id FROM worker_types WHERE worker_type_id = @WorkerTypeId",
                             new { WorkerTypeId = sortOrder.TypeId },
                             transaction
                         );
 
-                        if (currentSortOrder == sortOrder.TypeSort)
+                        // Fetch the current sort order for the given worker_type_id and worker_class_id
+                        var currentSortOrder = await _dbConnection.QueryFirstOrDefaultAsync<WorkerTypeSort>(
+                            "SELECT worker_type_sort AS TypeSort FROM worker_types WHERE worker_type_id = @WorkerTypeId",
+                            new { WorkerTypeId = sortOrder.TypeId },
+                            transaction
+                        );
+
+                        if (currentSortOrder.TypeSort == sortOrder.TypeSort)
                             continue;
 
                         string adjustSortOrderQuery;
-                        if (currentSortOrder < sortOrder.TypeSort)
+                        if (currentSortOrder.TypeSort < sortOrder.TypeSort)
                         {
                             // Shift down the worker types between currentSortOrder and newSortOrder
                             adjustSortOrderQuery = @"
                             UPDATE worker_types 
                             SET worker_type_sort = worker_type_sort - 1 
-                            WHERE worker_type_sort > @CurrentSortOrder 
+                            WHERE worker_class_id = @WorkerClassId
+                              AND worker_type_sort > @CurrentSortOrder 
                               AND worker_type_sort <= @NewSortOrder";
                         }
                         else
@@ -370,13 +379,14 @@ namespace Infrastructure.Repositories
                             adjustSortOrderQuery = @"
                             UPDATE worker_types 
                             SET worker_type_sort = worker_type_sort + 1 
-                            WHERE worker_type_sort >= @NewSortOrder 
+                            WHERE worker_class_id = @WorkerClassId
+                              AND worker_type_sort >= @NewSortOrder 
                               AND worker_type_sort < @CurrentSortOrder";
                         }
 
                         await _dbConnection.ExecuteAsync(
                             adjustSortOrderQuery,
-                            new { CurrentSortOrder = currentSortOrder, NewSortOrder = sortOrder.TypeSort },
+                            new { WorkerClassId = workerClassId, CurrentSortOrder = currentSortOrder.TypeSort, NewSortOrder = sortOrder.TypeSort },
                             transaction
                         );
 
@@ -401,5 +411,7 @@ namespace Infrastructure.Repositories
                 }
             }
         }
+
+
     }
 }

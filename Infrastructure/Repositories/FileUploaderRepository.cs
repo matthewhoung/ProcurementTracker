@@ -1,8 +1,10 @@
 ﻿using Dapper;
 using Domain.Entities.Commons.FileUploader;
+using Domain.Entities.Commons.Generic;
 using Domain.Interfaces;
+using Google.Cloud.Storage.V1;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using System.Data;
 
 namespace Infrastructure.Repositories
@@ -10,12 +12,22 @@ namespace Infrastructure.Repositories
     public class FileUploaderRepository : IFileUploaderRepository
     {
         private readonly IDbConnection _dbConnection;
-        private readonly IConfiguration _configuration;
+        private readonly StorageClient _storageClient;
+        private readonly string _bucketName;
+        private readonly string _procurementDirectory;
+        private readonly string _gcsBaseUrl = "https://storage.googleapis.com";
 
-        public FileUploaderRepository(IDbConnection dbConnection, IConfiguration configuration)
+        public FileUploaderRepository(IDbConnection dbConnection, IOptions<GoogleCloudStorageOptions> storageOptions)
         {
             _dbConnection = dbConnection;
-            _configuration = configuration;
+
+            var options = storageOptions.Value;
+            _bucketName = options.BucketName;
+            _procurementDirectory = options.ProcurementDirectory;
+
+            // Set the Google Cloud credentials environment variable
+            Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", options.CredentialsFilePath);
+            _storageClient = StorageClient.Create();
         }
 
         public async Task<int> CreateFileUrlAsync(FileUploader uploader, IFormFile file)
@@ -68,16 +80,16 @@ namespace Infrastructure.Repositories
         public async Task<List<FileUploader>> GetFilePathAsync(int formId)
         {
             var readCommand = @"
-                    SELECT
-                        form_id AS FormId,
-                        file_id AS FileId,
-                        uploader_id AS UploaderId,
-                        file_name AS FileName,
-                        file_path AS FilePath,
-                        created_at AS CreatedAt,
-                        updated_at AS UpdatedAt
-                    FROM forms_filepaths
-                    WHERE form_id = @FromId";
+                        SELECT
+                            form_id AS FormId,
+                            file_id AS FileId,
+                            uploader_id AS UploaderId,
+                            file_name AS FileName,
+                            file_path AS FilePath,
+                            created_at AS CreatedAt,
+                            updated_at AS UpdatedAt
+                        FROM forms_filepaths
+                        WHERE form_id = @FromId";
             var parameters = new { FromId = formId };
             var filePath = await _dbConnection.QueryAsync<FileUploader>(readCommand, parameters);
             return filePath.AsList();
@@ -89,11 +101,9 @@ namespace Infrastructure.Repositories
 
             int autoIncrement = currentMaxIncrement + 1;
 
-            string rootPath = _configuration["FileUploadPath"];
-            DateTime now = DateTime.Now;
-            string extension = Path.GetExtension(file.FileName);
-            string fileName = now.ToString("yyyy-MM-dd") + $"-{autoIncrement}" + extension;
-            string filePath = Path.Combine(rootPath, formId.ToString(), fileName);
+            string fileName = $"{DateTime.Now:yyyy-MM-dd}-{autoIncrement}{Path.GetExtension(file.FileName)}";
+            string objectName = $"{_procurementDirectory}/{formId}/{fileName}";
+            string filePath = $"{_gcsBaseUrl}/{_bucketName}/{objectName}";
 
             return filePath;
         }
@@ -101,9 +111,9 @@ namespace Infrastructure.Repositories
         private async Task<int> GetOrderFormMaxIncrement(int orderFormId)
         {
             var readCommand = @"
-                SELECT COUNT(file_path)
-                FROM forms_filepaths
-                WHERE form_id = @OrderFormId";
+                    SELECT COUNT(file_path)
+                    FROM forms_filepaths
+                    WHERE form_id = @OrderFormId";
             var parameters = new { OrderFormId = orderFormId };
             var maxIncrement = await _dbConnection.ExecuteScalarAsync<int>(readCommand, parameters);
             return maxIncrement;
@@ -111,16 +121,37 @@ namespace Infrastructure.Repositories
 
         private async Task StoreFileAsync(IFormFile file, string filePath)
         {
-            var directoryPath = Path.GetDirectoryName(filePath);
-            if (!Directory.Exists(directoryPath))
+            using (var memoryStream = new MemoryStream())
             {
-                Directory.CreateDirectory(directoryPath);
-            }
+                await file.CopyToAsync(memoryStream);
+                memoryStream.Seek(0, SeekOrigin.Begin);
 
-            using (var fileStream = new FileStream(filePath, FileMode.Create))
-            {
-                await file.CopyToAsync(fileStream);
+                var objectName = filePath.Replace($"{_gcsBaseUrl}/{_bucketName}/", "").Replace("\\", "/");
+                var mimeType = GetMimeType(Path.GetExtension(file.FileName));
+                await _storageClient.UploadObjectAsync(_bucketName, objectName, mimeType, memoryStream);
             }
+        }
+
+        private string GetMimeType(string extension)
+        {
+            return extension.ToLower() switch
+            {
+                ".jpg" => "image/jpeg",
+                ".jpeg" => "image/jpeg",
+                ".png" => "image/png",
+                ".gif" => "image/gif",
+                ".bmp" => "image/bmp",
+                ".tiff" => "image/tiff",
+                ".svg" => "image/svg+xml",
+                ".mp4" => "video/mp4",
+                ".mov" => "video/quicktime",
+                ".avi" => "video/x-msvideo",
+                ".mkv" => "video/x-matroska",
+                ".wmv" => "video/x-ms-wmv",
+                ".flv" => "video/x-flv",
+                ".webm" => "video/webm",
+                _ => "application/octet-stream"
+            };
         }
     }
 }
