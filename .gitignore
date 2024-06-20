@@ -362,3 +362,4 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /WebApi/appsettings.Development.json
+/WebApi/geometric-sled-358503-ff97e5b96b98.json
