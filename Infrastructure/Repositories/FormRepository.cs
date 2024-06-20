@@ -718,6 +718,7 @@ namespace Infrastructure.Repositories
             var parameters = new { FormId = formId };
             await _dbConnection.ExecuteAsync(updateCommand, parameters);
         }
+
         // Delete section
 
         public async Task DeleteFormAsync(int formId)
