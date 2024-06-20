@@ -346,18 +346,37 @@ namespace Infrastructure.Repositories
                     foreach (var sortOrder in workerTypeSortOrders)
                     {
                         // Fetch the worker_class_id for the current worker_type_id
-                        var workerClassId = await _dbConnection.ExecuteScalarAsync<int>(
-                            "SELECT worker_class_id FROM worker_types WHERE worker_type_id = @WorkerTypeId",
-                            new { WorkerTypeId = sortOrder.TypeId },
+                        var classquery = @"
+                            SELECT 
+                                worker_class_id 
+                            FROM 
+                                worker_types 
+                            WHERE 
+                                worker_type_id = @WorkerTypeId";
+                        var classparameters = new { WorkerTypeId = sortOrder.TypeId };
+
+                        var workerClassId = await _dbConnection.ExecuteScalarAsync<int>
+                            (
+                            classquery,classparameters,
                             transaction
-                        );
+                            );
 
                         // Fetch the current sort order for the given worker_type_id and worker_class_id
-                        var currentSortOrder = await _dbConnection.QueryFirstOrDefaultAsync<WorkerTypeSort>(
-                            "SELECT worker_type_sort AS TypeSort FROM worker_types WHERE worker_type_id = @WorkerTypeId",
-                            new { WorkerTypeId = sortOrder.TypeId },
+                        var sortquery = @"
+                            SELECT 
+                                worker_type_sort AS TypeSort 
+                            FROM 
+                                worker_types 
+                            WHERE 
+                                worker_type_id = @WorkerTypeId";
+                        var sortparameters = new { WorkerTypeId = sortOrder.TypeId };
+
+                        var currentSortOrder = await _dbConnection.QueryFirstOrDefaultAsync<WorkerTypeSort>
+                            (
+                            sortquery,
+                            sortparameters,
                             transaction
-                        );
+                            );
 
                         if (currentSortOrder.TypeSort == sortOrder.TypeSort)
                             continue;
@@ -384,11 +403,16 @@ namespace Infrastructure.Repositories
                               AND worker_type_sort < @CurrentSortOrder";
                         }
 
-                        await _dbConnection.ExecuteAsync(
+                        await _dbConnection.ExecuteAsync
+                            (
                             adjustSortOrderQuery,
-                            new { WorkerClassId = workerClassId, CurrentSortOrder = currentSortOrder.TypeSort, NewSortOrder = sortOrder.TypeSort },
+                            new { 
+                                WorkerClassId = workerClassId, 
+                                CurrentSortOrder = currentSortOrder.TypeSort, 
+                                NewSortOrder = sortOrder.TypeSort 
+                                },
                             transaction
-                        );
+                            );
 
                         // Update the worker type to the new sort order
                         await _dbConnection.ExecuteAsync(

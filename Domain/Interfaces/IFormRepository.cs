@@ -6,8 +6,7 @@ namespace Domain.Interfaces
     {
         /*
          * 加入發包價、核定價邏輯
-         * 加入金額計算邏輯
-         * 將FileUploader存儲路徑改為GCStorage
+         * 加入蹦表號碼
          * Forms新增廢棄狀態as "archived"
          */
         // Create section
