@@ -62,6 +62,29 @@ namespace WebApi.Controllers
         {
             try
             {
+                var formFilter = new FormFilterDto
+                {
+                    FormId = formId,
+                    UserId = userId,
+                    Stage = stage,
+                    Status = status
+                };
+
+                var forms = await _filteredFormsService.GetAllFormInOneAsync(formFilter);
+                return Ok(forms);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
+        }
+
+        /*
+        [HttpGet("get/all/forms/list")]
+        public async Task<ActionResult<List<FormInfoDto>>> GetForms([FromQuery] int? formId, [FromQuery] int? userId, [FromQuery] string? stage, [FromQuery] string? status)
+        {
+            try
+            {
                 var forms = await _filteredFormsService.GetAllFormInOneAsync(formId, userId, stage, status);
                 return Ok(forms);
             }
@@ -70,6 +93,7 @@ namespace WebApi.Controllers
                 return StatusCode(500, new { message = ex.Message });
             }
         }
+        */
 
         [HttpGet("get/allforms")]
         public async Task<IActionResult> GetAllForms()

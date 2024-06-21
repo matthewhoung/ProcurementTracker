@@ -286,6 +286,7 @@ namespace Infrastructure.Repositories
             var projects = await _dbConnection.QueryAsync<Project>(readCommand);
             return projects.AsList();
         }
+
         public async Task<List<Workers>> GetAllWorkerClassWithTypesAsync()
         {
             var readCommand = @"

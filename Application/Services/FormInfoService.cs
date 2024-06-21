@@ -48,6 +48,21 @@ namespace Application.Services
                 Affiliates = new List<FormAffiliateDto>()
             };
 
+            var affiliateFormIds = affiliateForms.Select(af => af.AffiliateFormId).ToList();
+            var affiliateInfos = await GetFormInfosByIdsAsync(affiliateFormIds);
+
+            foreach (var affiliateForm in affiliateForms)
+            {
+                var affiliateFormInfo = affiliateInfos.FirstOrDefault(info => info.Id == affiliateForm.AffiliateFormId);
+                formInfoDto.Affiliates.Add(new FormAffiliateDto
+                {
+                    FormId = affiliateForm.FormId,
+                    AffiliateFormId = affiliateForm.AffiliateFormId,
+                    AffiliateFormInfo = affiliateFormInfo
+                });
+            }
+
+            /*
             foreach (var affiliateForm in affiliateForms)
             {
                 var affiliateFormInfo = await GetFormInfoRecursiveAsync(affiliateForm.AffiliateFormId);
@@ -58,8 +73,23 @@ namespace Application.Services
                     AffiliateFormInfo = affiliateFormInfo
                 });
             }
-
+            */
             return formInfoDto;
+        }
+
+        private async Task<List<FormInfoDto>> GetFormInfosByIdsAsync(IEnumerable<int> formIds)
+        {
+            var formInfos = new List<FormInfoDto>();
+            foreach (var formId in formIds)
+            {
+                var formInfo = await GetFormInfoRecursiveAsync(formId);
+                if (formInfo != null)
+                {
+                    formInfos.Add(formInfo);
+                }
+            }
+
+            return formInfos;
         }
     }
 }
