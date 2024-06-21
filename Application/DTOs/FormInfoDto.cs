@@ -6,6 +6,7 @@ namespace Application.DTOs
     public class FormInfoDto
     {
         public int Id { get; set; }
+        public List<string> SerialNumber { get; set; }
         public int ProjectId { get; set; }
         public string ProjectName { get; set; }
         public string Title { get; set; }

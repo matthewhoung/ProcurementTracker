@@ -6,7 +6,6 @@ namespace Domain.Interfaces
     {
         /*
          * 加入發包價、核定價邏輯
-         * 加入蹦表號碼
          * Forms新增廢棄狀態as "archived"
          */
 

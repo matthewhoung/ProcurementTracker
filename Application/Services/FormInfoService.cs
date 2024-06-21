@@ -31,6 +31,7 @@ namespace Application.Services
             var formInfoDto = new FormInfoDto
             {
                 Id = form.Id,
+                SerialNumber = form.SerialNumber,
                 ProjectId = form.ProjectId,
                 ProjectName = form.ProjectName,
                 Title = form.Title,
@@ -62,18 +63,6 @@ namespace Application.Services
                 });
             }
 
-            /*
-            foreach (var affiliateForm in affiliateForms)
-            {
-                var affiliateFormInfo = await GetFormInfoRecursiveAsync(affiliateForm.AffiliateFormId);
-                formInfoDto.Affiliates.Add(new FormAffiliateDto
-                {
-                    FormId = affiliateForm.FormId,
-                    AffiliateFormId = affiliateForm.AffiliateFormId,
-                    AffiliateFormInfo = affiliateFormInfo
-                });
-            }
-            */
             return formInfoDto;
         }
 

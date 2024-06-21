@@ -53,37 +53,97 @@ namespace Infrastructure.Repositories
         }
         public async Task<int> CreateOrderFormAsync(int formId)
         {
-            return await CreateSubFormAsync("forms_orderform", formId);
+            return await CreateSubFormAsync("forms_orderform", formId, 'P');
         }
+
         public async Task<int> CreateReceiveFormAsync(int formId)
         {
-            return await CreateSubFormAsync("forms_receiveform", formId);
+            return await CreateSubFormAsync("forms_receiveform", formId, 'A');
         }
+
         public async Task<int> CreatePayableFormAsync(int formId)
         {
-            return await CreateSubFormAsync("forms_payableform", formId);
+            return await CreateSubFormAsync("forms_payableform", formId, 'R');
         }
-        private async Task<int> CreateSubFormAsync(string tableName, int formId)
+        private async Task<int> CreateSubFormAsync(string tableName, int formId, char prefix)
         {
+            string serialNumber;
+
+            switch (tableName)
+            {
+                case "forms_orderform":
+                    serialNumber = await GenerateBomSerialNumberAsync(tableName, prefix);
+                    break;
+                case "forms_receiveform":
+                    serialNumber = (await GetOrderFormSerialNumberAsync(formId)).Replace('P', 'A');
+                    break;
+                case "forms_payableform":
+                    serialNumber = (await GetOrderFormSerialNumberAsync(formId)).Replace('P', 'R');
+                    break;
+                default:
+                    throw new ArgumentException("Invalid table name");
+            }
+
             var writeCommand = $@"
                 INSERT INTO {tableName}
                 (
                     form_id,
-                    status
+                    status,
+                    serial_number
                 )
                 VALUES
                 (
                     @FormId,
-                    'pending'
+                    'pending',
+                    @SerialNumber
                 );
                 SELECT LAST_INSERT_ID();";
-            var parameters = new
-            {
-                FormId = formId
-            };
+                var parameters = new
+                {
+                    FormId = formId,
+                    SerialNumber = serialNumber
+                };
 
             return await _dbConnection.ExecuteScalarAsync<int>(writeCommand, parameters);
         }
+        private async Task<string> GenerateBomSerialNumberAsync(string tableName, char prefix)
+        {
+            var datePart = DateTime.UtcNow.ToString("MMddyyyy");
+            var serialPrefix = $"{prefix}{datePart}-";
+
+            var query = $@"
+                SELECT 
+                    COUNT(serial_number)
+                FROM 
+                    {tableName}
+                WHERE 
+                    serial_number LIKE @SerialPrefix";
+
+            var parameters = new 
+            { 
+                SerialPrefix = $"{serialPrefix}%" 
+            };
+            var count = await _dbConnection.ExecuteScalarAsync<int>(query, parameters);
+            var newSerialNumber = count + 1;
+
+            return $"{serialPrefix}{newSerialNumber}";
+        }
+        private async Task<string> GetOrderFormSerialNumberAsync(int formId)
+        {
+            var query = @"
+            SELECT 
+                serial_number
+            FROM 
+                forms_orderform
+            WHERE 
+                form_id = @FormId";
+
+            var parameters = new { FormId = formId };
+            var serialNumber = await _dbConnection.ExecuteScalarAsync<string>(query, parameters);
+
+            return serialNumber;
+        }
+
         public async Task<int> CreateFormDetailsAsync(IEnumerable<FormDetail> formDetails)
         {
             var writeCommand = @"
@@ -295,8 +355,56 @@ namespace Infrastructure.Repositories
                     f.id = @FormId";
             var parameters = new { FormId = formId };
             var form = await _dbConnection.QueryFirstOrDefaultAsync<Form>(readCommand, parameters);
+
+            if (form != null)
+            {
+                form.SerialNumber = await GetSerialNumbersByStageAsync(formId, form.Stage);
+            }
+
             return form;
         }
+
+        private async Task<List<string>> GetSerialNumbersByStageAsync(int formId, string stage)
+        {
+            switch (stage)
+            {
+                case "PayableForm":
+                    return await GetSerialNumbersFromTablesAsync(formId, "forms_payableform", "forms_receiveform", "forms_orderform");
+                case "ReceivableForm":
+                    return await GetSerialNumbersFromTablesAsync(formId, "forms_receiveform", "forms_orderform");
+                case "OrderForm":
+                    return await GetSerialNumbersFromTablesAsync(formId, "forms_orderform");
+                default:
+                    throw new ArgumentException("Invalid stage");
+            }
+        }
+
+        private async Task<List<string>> GetSerialNumbersFromTablesAsync(int formId, params string[] tables)
+        {
+            var serialNumbers = new List<string>();
+
+            foreach (var table in tables)
+            {
+                var query = $@"
+                SELECT 
+                    serial_number
+                FROM 
+                    {table}
+                WHERE 
+                    form_id = @FormId";
+
+                var serialNumber = await _dbConnection.QueryFirstOrDefaultAsync<string>(query, new { FormId = formId });
+
+                if (!string.IsNullOrEmpty(serialNumber))
+                {
+                    serialNumbers.Add(serialNumber);
+                }
+            }
+
+            return serialNumbers;
+        }
+
+
         public async Task<IEnumerable<int>> GetUserFormIdsAsync(int userId)
         {
             var readCommand = @"
