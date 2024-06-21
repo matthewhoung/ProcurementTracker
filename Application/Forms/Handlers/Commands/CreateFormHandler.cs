@@ -127,6 +127,7 @@ namespace Application.Forms.Handlers.Commands
 
                         await _formRepository.CreateDefaultSignatureMembersAsync(formSignatureMembers);
                     }
+
                     scope.Complete();
                     return formId;
                 }

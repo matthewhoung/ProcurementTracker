@@ -5,7 +5,7 @@ namespace Domain.Interfaces
 {
     public interface IFileUploaderRepository
     {
-        Task<int> CreateFileUrlAsync(FileUploader uploaderId, IFormFile file);
+        Task<List<int>> CreateFileUrlsAsync(FileUploader uploader, List<IFormFile> files);
         Task<List<FileUploader>> GetFilePathAsync(int formId);
     }
 }

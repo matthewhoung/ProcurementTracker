@@ -30,44 +30,50 @@ namespace Infrastructure.Repositories
             _storageClient = StorageClient.Create();
         }
 
-        public async Task<int> CreateFileUrlAsync(FileUploader uploader, IFormFile file)
+        public async Task<List<int>> CreateFileUrlsAsync(FileUploader uploader, List<IFormFile> files)
         {
+            var fileIds = new List<int>();
+
             using (_dbConnection)
             {
                 _dbConnection.Open();
                 var transaction = _dbConnection.BeginTransaction();
                 try
                 {
-                    var fileFullPath = await GenerateFilePath(uploader.FormId, file);
-                    var writeCommand = @"
-                        INSERT INTO forms_filepaths
-                            (form_id,
-                            uploader_id,
-                            file_name,
-                            file_path,
-                            created_at,
-                            updated_at)
-                        VALUES
-                            (@OrderFormId,
-                            @UploaderId,
-                            @FileName,
-                            @FilePath,
-                            @CreateAt,
-                            @UpdateAt);
-                        SELECT LAST_INSERT_ID();";
-                    var parameters = new
+                    foreach (var file in files)
                     {
-                        OrderFormId = uploader.FormId,
-                        UploaderId = uploader.UploaderId,
-                        FileName = Path.GetFileName(fileFullPath),
-                        FilePath = fileFullPath,
-                        CreateAt = DateTime.UtcNow,
-                        UpdateAt = DateTime.UtcNow
-                    };
-                    var fileId = await _dbConnection.ExecuteScalarAsync<int>(writeCommand, parameters, transaction);
+                        var fileFullPath = await GenerateFilePath(uploader.FormId, file);
+                        var writeCommand = @"
+                            INSERT INTO forms_filepaths
+                                (form_id,
+                                uploader_id,
+                                file_name,
+                                file_path,
+                                created_at,
+                                updated_at)
+                            VALUES
+                                (@OrderFormId,
+                                @UploaderId,
+                                @FileName,
+                                @FilePath,
+                                @CreateAt,
+                                @UpdateAt);
+                            SELECT LAST_INSERT_ID();";
+                        var parameters = new
+                        {
+                            OrderFormId = uploader.FormId,
+                            UploaderId = uploader.UploaderId,
+                            FileName = Path.GetFileName(fileFullPath),
+                            FilePath = fileFullPath,
+                            CreateAt = DateTime.UtcNow,
+                            UpdateAt = DateTime.UtcNow
+                        };
+                        var fileId = await _dbConnection.ExecuteScalarAsync<int>(writeCommand, parameters, transaction);
+                        fileIds.Add(fileId);
+                        await StoreFileAsync(file, fileFullPath);
+                    }
+
                     transaction.Commit();
-                    await StoreFileAsync(file, fileFullPath);
-                    return fileId;
                 }
                 catch (Exception ex)
                 {
@@ -75,7 +81,10 @@ namespace Infrastructure.Repositories
                     throw new Exception(ex.Message);
                 }
             }
+
+            return fileIds;
         }
+
 
         public async Task<List<FileUploader>> GetFilePathAsync(int formId)
         {
