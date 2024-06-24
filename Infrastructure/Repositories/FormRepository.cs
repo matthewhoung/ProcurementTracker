@@ -535,6 +535,8 @@ namespace Infrastructure.Repositories
                     fp.delta_title_id AS DeltaTitleId,
                     pt1.pay_type_name AS DeltaTitle,
                     fp.payment_amount AS PaymentAmount,
+                    fp.is_taxed AS IsTaxed,
+                    fp.is_receipt AS IsReceipt,
                     fp.payment_title_id AS PaymentTitleId,
                     pt2.pay_type_name AS PaymentTitle,
                     fp.payment_tool_id AS PaymentToolId,

@@ -9,6 +9,9 @@
         public int DeltaTitleId { get; set; }
         public string DeltaTitle { get; set; }
         public int PaymentAmount { get; set; }
+        public int IsTaxed { get; set; }
+        public int TaxAmount { get; set; }
+        public int IsReceipt { get; set; }
         public int PaymentTitleId { get; set; }
         public string PaymentTitle { get; set; }
         public int PaymentToolId { get; set; }

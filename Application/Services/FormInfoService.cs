@@ -37,6 +37,7 @@ namespace Application.Services
                 Title = form.Title,
                 Description = form.Description,
                 Stage = form.Stage,
+                PaymentAmount = payments.FirstOrDefault()?.PaymentAmount ?? 0,
                 Status = status,
                 CreatedAt = form.CreatedAt,
                 UpdatedAt = form.UpdatedAt,

@@ -106,7 +106,7 @@ namespace Application.Forms.Handlers.Commands
                             PaymentToolId = request.PaymentInfo.PaymentToolId,
                             PaymentAmount = 0,
                             PaymentDelta = 0,
-                            DeltaTitleId = 1,
+                            DeltaTitleId = 5,
                             PaymentTotal = 0
                         };
 
