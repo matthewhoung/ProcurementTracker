@@ -5,8 +5,9 @@ namespace Domain.Interfaces
     public interface IFormRepository
     {
         /*
-         * 加入發包價、核定價邏輯
+         * 加入發包價、核定價、含稅未稅、稅金邏輯
          * Forms新增廢棄狀態as "archived"
+         * 新增細項簽核通過 => 人員才能簽核
          */
 
         // Create section

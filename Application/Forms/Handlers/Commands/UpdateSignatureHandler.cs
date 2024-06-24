@@ -53,21 +53,26 @@ namespace Application.Forms.Handlers.Commands
 
             if (formStatus == "finished")
             {
-                if (formSignatureMember.Stage == "OrderForm")
-                {
-                    await _formRepository.CreateReceiveFormAsync(request.FormId);
-                    await _formRepository.UpdateFormStageAsync(request.FormId, "ReceiveForm");
-                    await CreateSignaturesForNextStage(request.FormId, "ReceiveForm", formSignatureMembers);
-                }
-                else if (formSignatureMember.Stage == "ReceiveForm")
-                {
-                    await _formRepository.CreatePayableFormAsync(request.FormId);
-                    await _formRepository.UpdateFormStageAsync(request.FormId, "PayableForm");
-                    await CreateSignaturesForNextStage(request.FormId, "PayableForm", formSignatureMembers);
-                }
+                await HandleFormCompletetionAsync(request.FormId, formSignatureMember.Stage, formSignatureMembers);
             }
 
             return Unit.Value;
+        }
+
+        private async Task HandleFormCompletetionAsync(int formId, string currentstage, List<FormSignatureMember> currentSignatures)
+        {
+            if (currentstage == "OrderForm")
+            {
+                await _formRepository.CreateReceiveFormAsync(formId);
+                await _formRepository.UpdateFormStageAsync(formId, "ReceiveForm");
+                await CreateSignaturesForNextStage(formId, "ReceiveForm", currentSignatures);
+            }
+            else if (currentstage == "ReceiveForm")
+            {
+                await _formRepository.CreatePayableFormAsync(formId);
+                await _formRepository.UpdateFormStageAsync(formId, "PayableForm");
+                await CreateSignaturesForNextStage(formId, "PayableForm", currentSignatures);
+            }
         }
 
         private async Task CreateSignaturesForNextStage(int formId, string newStage, List<FormSignatureMember> currentSignatures)
