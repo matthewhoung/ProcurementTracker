@@ -55,8 +55,7 @@ namespace Application.Forms.Handlers.Commands
                 1 => paymentAmount,
                 2 => (int)(paymentAmount * 1.05),
                 5 => paymentAmount - paymentDelta,
-                7 => paymentAmount + paymentDelta,
-                8 => paymentAmount / paymentDelta,
+                7 => paymentAmount - paymentDelta,
                 _ => throw new ArgumentException("Invalid delta title ID")
             };
         }

@@ -20,9 +20,9 @@ namespace Application.Services
             {
                 { FormId: int formId } 
                     => GetFormInfoByIdAsync(formId),
-                { UserId: int userId, FormId: null, Stage: null, Status: null } 
+                { FormId: null, UserId: int userId,  Stage: null, Status: null } 
                     => GetFormInfoByUserIdAsync(userId),
-                { Stage: string stage, Status: string status, FormId: null, UserId: null } 
+                { FormId: null, UserId: null, Stage: string stage, Status: string status } 
                     => GetFormsByStageAndStatusAsync(stage, status),
                 { FormId: null, UserId: int userId, Stage: string stage, Status: string status } 
                     => GetFormInfoByUserIdStageAndStatusAsync(userId, stage, status),

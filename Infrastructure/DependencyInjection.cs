@@ -16,6 +16,7 @@ namespace Infrastructure
             services.AddScoped<IGenericRepository, GenericRepository>();
             services.AddScoped<FormInfoService>();
             services.AddScoped<FilteredFormsService>();
+            services.AddScoped<PaymentCalculationService>();
 
             return services;
         }

@@ -1,4 +1,5 @@
 ﻿using Application.DTOs;
+using Application.Services;
 using Domain.Entities.Forms;
 using Domain.Interfaces;
 using MediatR;
@@ -21,10 +22,12 @@ namespace Application.Forms.Handlers.Commands
     public class CreateFormHandler : IRequestHandler<CreateFormCommand, int>
     {
         private readonly IFormRepository _formRepository;
+        private readonly PaymentCalculationService _paymentCalculationService;
 
-        public CreateFormHandler(IFormRepository formRepository)
+        public CreateFormHandler(IFormRepository formRepository, PaymentCalculationService payment)
         {
             _formRepository = formRepository;
+            _paymentCalculationService = payment;
         }
 
         public async Task<int> Handle(CreateFormCommand request, CancellationToken cancellationToken)
@@ -52,6 +55,8 @@ namespace Application.Forms.Handlers.Commands
                     }
 
                     //itemDetails
+                    int totalPaymentAmount = 0;
+
                     if (request.FormDetails != null && request.FormDetails.Any())
                     {
                         var formDetails = request.FormDetails.Select(d => new FormDetail
@@ -68,10 +73,34 @@ namespace Application.Forms.Handlers.Commands
                             UpdatedAt = DateTime.UtcNow
                         }).ToList();
 
+                        totalPaymentAmount = formDetails.Sum(d => d.Total);
+
                         await _formRepository.CreateFormDetailsAsync(formDetails);
                     }
 
+                    //PaymentInfo
+                    if (request.PaymentInfo != null)
+                    {
+                        var formPaymentInfo = new FormPayment
+                        {
+                            FormId = formId,
+                            PaymentTitleId = request.PaymentInfo.PaymentTitleId,
+                            PaymentToolId = request.PaymentInfo.PaymentToolId,
+                            IsTaxed = request.PaymentInfo.IsTaxed,
+                            IsReceipt = request.PaymentInfo.IsReceipt,
+                            PaymentAmount = totalPaymentAmount,
+                            PaymentDelta = request.PaymentInfo.PaymentDelta,
+                            DeltaTitleId = 5,
+                            TaxAmount = 0,
+                            PaymentTotal = 0
+                        };
+
+                        _paymentCalculationService.CalculatePayment(formPaymentInfo);
+                        await _formRepository.CreateFormPaymentInfoAsync(formPaymentInfo);
+                    }
+
                     //Workers
+
                     if (request.FormWorkers != null && request.FormWorkers.Any())
                     {
                         var formWorkers = request.FormWorkers.Select(w => new FormWorker
@@ -83,7 +112,7 @@ namespace Application.Forms.Handlers.Commands
 
                         await _formRepository.CreateFormWorkersAsync(formWorkers);
                     }
-
+                    
                     //Department
                     if (request.FormDepartments != null && request.FormDepartments.Any())
                     {
@@ -94,24 +123,6 @@ namespace Application.Forms.Handlers.Commands
                         }).ToList();
 
                         await _formRepository.CreateFormDepartmentsAsync(formDepartments);
-                    }
-
-                    //PaymentInfo
-                    if (request.PaymentInfo != null)
-                    {
-                        var formPaymentInfo = new FormPayment
-                        {
-                            FormId = formId,
-                            PaymentTitleId = request.PaymentInfo.PaymentTitleId,
-                            PaymentToolId = request.PaymentInfo.PaymentToolId,
-                            PaymentAmount = 0,
-                            PaymentDelta = 0,
-                            DeltaTitleId = 5,
-                            PaymentTotal = 0
-                        };
-
-                        await _formRepository.CreateFormPaymentInfoAsync(formPaymentInfo);
-                        await _formRepository.UpdatePaymentAmountAsync(formId);
                     }
 
                     //SignatureMembers

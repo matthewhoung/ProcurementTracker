@@ -9,6 +9,9 @@ namespace Application.Forms.Handlers.Commands
         public int FormId { get; set; }
         public int PaymentTitleId { get; set; }
         public int PaymentToolId { get; set; }
+        public int PaymentDelta { get; set; }
+        public int IsTaxed { get; set; }
+        public int IsReceipt { get; set; }
     }
     public class CreateFormPaymentHandler : IRequestHandler<CreateFormPaymentCommand, int>
     {
@@ -25,7 +28,9 @@ namespace Application.Forms.Handlers.Commands
             {
                 FormId = request.FormId,
                 PaymentTitleId = request.PaymentTitleId,
-                PaymentToolId = request.PaymentToolId
+                PaymentToolId = request.PaymentToolId,
+                IsTaxed = request.IsTaxed,
+                IsReceipt = request.IsReceipt
             };
 
             var formPaymentId = await _formRepository.CreateFormPaymentInfoAsync(formPayment);

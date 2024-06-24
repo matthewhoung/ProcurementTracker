@@ -256,6 +256,9 @@ namespace Infrastructure.Repositories
                     payment_total,
                     payment_delta,
                     delta_title_id,
+                    is_taxed,
+                    tax_amount,
+                    is_receipt,
                     payment_amount,
                     payment_title_id,
                     payment_tool_id
@@ -266,6 +269,9 @@ namespace Infrastructure.Repositories
                     @PaymentTotal,
                     @PaymentDelta,
                     @DeltaTitleId,
+                    @IsTaxed,
+                    @TaxAmount,
+                    @IsReceipt,
                     @PaymentAmount,
                     @PaymentTitleId,
                     @PaymentToolId
@@ -804,18 +810,24 @@ namespace Infrastructure.Repositories
         }
         public async Task UpdatePaymentAmountAsync(int formId)
         {
-            var detailSumTotal = await GetFormDetailSumTotalAsync(formId);
-
             var updateCommand = @"
-                UPDATE
-                    forms_payment
-                SET
-                    payment_amount = @PaymentAmount
-                WHERE
-                    form_id = @FormId";
-            var parameters = new { FormId = formId, PaymentAmount = detailSumTotal };
+                UPDATE forms_payment
+                SET 
+                    payment_amount = 
+                    (
+                        SELECT 
+                            SUM(detail_total)
+                        FROM 
+                            forms_detail
+                        WHERE 
+                            form_id = @FormId
+                    )
+                WHERE form_id = @FormId";
+
+            var parameters = new { FormId = formId };
             await _dbConnection.ExecuteAsync(updateCommand, parameters);
         }
+
         public async Task UpdateArchiveStatus(int formId, int userId)
         {
             var updateCommand = @"
