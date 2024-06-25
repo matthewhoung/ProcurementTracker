@@ -1,6 +1,6 @@
-﻿namespace Application.DTOs
+﻿namespace Domain.Entities.Forms
 {
-    public class FormCoverDto
+    public class FormCover
     {
         public int Id { get; set; }
         public string SerialNumber { get; set; }

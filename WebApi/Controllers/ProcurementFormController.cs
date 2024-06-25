@@ -86,6 +86,13 @@ namespace WebApi.Controllers
             var forms = await _mediator.Send(query);
             return Ok(forms);
         }
+        [HttpGet("get/allforms/cover")]
+        public async Task<IActionResult> GetFormCoverData(string stage, string status)
+        {
+            var query = new GetFormCoverDataQuery(stage, status);
+            var formCoverData = await _mediator.Send(query);
+            return Ok(formCoverData);
+        }
 
         [HttpGet("get/{formid}")]
         public async Task<IActionResult> GetFormById(int formid)

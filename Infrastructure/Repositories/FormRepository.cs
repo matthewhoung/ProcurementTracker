@@ -1,4 +1,5 @@
-﻿using Dapper;
+﻿using Application.DTOs;
+using Dapper;
 using Domain.Entities.Forms;
 using Domain.Interfaces;
 using System.Data;
@@ -369,6 +370,50 @@ namespace Infrastructure.Repositories
 
             return form;
         }
+        public async Task<List<FormCover>> GetFormCoverDataAsync(string stage, string status)
+        {
+            string stageTable = stage switch
+            {
+                "OrderForm" => "forms_orderform",
+                "ReceiveForm" => "forms_receiveform",
+                "PayableForm" => "forms_payableform",
+                _ => throw new ArgumentException("Invalid stage")
+            };
+
+            var query = $@"
+                SELECT
+                    f.id AS Id,
+                    st.serial_number AS SerialNumber,
+                    f.project_id AS ProjectId,
+                    p.pjname AS ProjectName,
+                    f.title AS Title,
+                    f.description AS Description,
+                    fp.payment_total AS PaymentTotal,
+                    fp.is_taxed AS IsTaxed,
+                    fp.is_receipt AS IsReceipt,
+                    f.stage AS Stage,
+                    st.status AS Status,
+                    f.created_at AS CreatedAt,
+                    f.updated_at AS UpdatedAt
+                FROM
+                    forms f
+                JOIN
+                    {stageTable} st ON f.id = st.form_id
+                JOIN
+                    forms_payment fp ON f.id = fp.form_id
+                JOIN
+                    project p ON f.project_id = p.id
+                WHERE
+                    st.status = @Status";
+            var parameters = new 
+                { 
+                    Stage = stage, 
+                    Status = status 
+                };
+            var formCoverData = await _dbConnection.QueryAsync<FormCover>(query, parameters);
+            return formCoverData.AsList();
+        }
+
 
         private async Task<List<string>> GetSerialNumbersByStageAsync(int formId, string stage)
         {
