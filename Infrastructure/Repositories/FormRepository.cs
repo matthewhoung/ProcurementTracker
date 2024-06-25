@@ -506,7 +506,7 @@ namespace Infrastructure.Repositories
             var total = await _dbConnection.ExecuteScalarAsync<int>(readCommand, parameters);
             return total;
         }
-        public async Task<List<FormWorker>> GetFormWorkerListByFormIdAsync(int formId)
+        public async Task<FormWorker> GetFormWorkerByFormIdAsync(int formId)
         {
             var readCommand = @"
                 SELECT
@@ -527,8 +527,8 @@ namespace Infrastructure.Repositories
                 WHERE
                     f.id = @FormId";
             var parameters = new { FormId = formId };
-            var formWorkers = await _dbConnection.QueryAsync<FormWorker>(readCommand, parameters);
-            return formWorkers.AsList();
+            var formWorker = await _dbConnection.QueryFirstOrDefaultAsync<FormWorker>(readCommand, parameters);
+            return formWorker;
         }
         public async Task<List<FormPayment>> GetFormPaymentInfoByFormIdAsync(int formId)
         {

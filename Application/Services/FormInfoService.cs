@@ -21,7 +21,7 @@ namespace Application.Services
 
             var details = await _formRepository.GetFormDetailsByFormIdAsync(formId);
             var payments = await _formRepository.GetFormPaymentInfoByFormIdAsync(formId);
-            var workers = await _formRepository.GetFormWorkerListByFormIdAsync(formId);
+            var workers = await _formRepository.GetFormWorkerByFormIdAsync(formId);
             var departments = await _formRepository.GetFormDepartmentsByFormIdAsync(formId);
             var signatures = await _formRepository.GetFormSignatureMembersByFormIdAsync(formId);
             var filePaths = await _fileUploaderRepository.GetFilePathAsync(formId);

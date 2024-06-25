@@ -18,7 +18,7 @@ namespace Application.DTOs
         public DateTime UpdatedAt { get; set; }
         public List<FormDetail> Details { get; set; }
         public List<FormSignatureMember> Signatures { get; set; }
-        public List<FormWorker> Workers { get; set; }
+        public FormWorker Workers { get; set; }
         public List<FormPayment> Payments { get; set; }
         public List<FormDepartment> Departments { get; set; }
         public List<FileUploader> FilePaths { get; set; }
