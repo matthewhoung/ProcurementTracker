@@ -735,33 +735,58 @@ namespace Infrastructure.Repositories
 
             return uncheckedCount == 0;
         }
-        public async Task<List<FormStatusCount>> GetFormStatusCountsAsync()
+        public async Task<List<FormStatusCount>> GetFormStatusCountsAsync(string stage)
         {
-            var query = @"
+            string stageTable = stage switch
+            {
+                "OrderForm" => "forms_orderform",
+                "ReceiveForm" => "forms_receiveform",
+                "PayableForm" => "forms_payableform",
+                _ => throw new ArgumentException("Invalid stage")
+            };
+
+            var query = $@"
                 SELECT 
-                    'OrderForm' AS FormType,
+                    '{stage}' AS FormType,
                     status,
                     COUNT(*) AS Count
-                FROM forms_orderform
+                FROM {stageTable}
                 GROUP BY status
                 UNION ALL
                 SELECT 
-                    'ReceiveForm' AS FormType,
-                    status,
-                    COUNT(*) AS Count
-                FROM forms_receiveform
-                GROUP BY status
+                    '{stage}' AS FormType,
+                    'pending' AS status,
+                    0 AS Count
+                FROM DUAL
+                    WHERE NOT EXISTS (SELECT 1 FROM {stageTable} WHERE status = 'pending')
                 UNION ALL
                 SELECT 
-                    'PayableForm' AS FormType,
-                    status,
-                    COUNT(*) AS Count
-                FROM forms_payableform
-                GROUP BY status;";
+                    '{stage}' AS FormType,
+                    'inprogress' AS status,
+                    0 AS Count
+                FROM DUAL
+                    WHERE NOT EXISTS (SELECT 1 FROM {stageTable} WHERE status = 'inprogress')
+                UNION ALL
+                SELECT 
+                    '{stage}' AS FormType,
+                    'finished' AS status,
+                    0 AS Count
+                FROM DUAL
+                    WHERE NOT EXISTS (SELECT 1 FROM {stageTable} WHERE status = 'finished')
+                UNION ALL
+                SELECT 
+                    '{stage}' AS FormType,
+                    'archived' AS status,
+                    0 AS Count
+                FROM DUAL
+                    WHERE NOT EXISTS (SELECT 1 FROM {stageTable} WHERE status = 'archived')
+                ORDER BY
+                    FIELD(status, 'pending', 'inprogress', 'finished', 'archived');";
 
             var formStatusCounts = await _dbConnection.QueryAsync<FormStatusCount>(query);
             return formStatusCounts.AsList();
         }
+
         public async Task<IEnumerable<FormAffiliate>> GetAllAffiliateFormsAsync(int formId)
         {
             var readCommand = @"

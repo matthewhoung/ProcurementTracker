@@ -112,6 +112,20 @@ namespace WebApi.Controllers
             var form = await _mediator.Send(query);
             return Ok(form);
         }
+
+        [HttpGet("get/status/counts")]
+        public async Task<IActionResult> GetFormStatusCounts([FromQuery] string stage)
+        {
+            if (string.IsNullOrEmpty(stage))
+            {
+                return BadRequest("Stage parameter is required.");
+            }
+
+            var query = new GetFormStatusCountsQuery(stage);
+            var formStatusCounts = await _mediator.Send(query);
+            return Ok(formStatusCounts);
+        }
+
         /*
         [HttpGet("get/{userId}/forms")]
         public async Task<IActionResult> GetUserForms(int userId)
@@ -185,13 +199,6 @@ namespace WebApi.Controllers
             return Ok(formStatus);
         }
         */
-        [HttpGet("get/status/counts")]
-        public async Task<IActionResult> GetFormStatusCounts()
-        {
-            var query = new GetFormStatusCountsQuery();
-            var formStatusCounts = await _mediator.Send(query);
-            return Ok(formStatusCounts);
-        }
 
         /*
          * Update section

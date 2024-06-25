@@ -34,7 +34,7 @@ namespace Domain.Interfaces
         Task<IEnumerable<int>> GetUserFormIdsAsync(int userId);
         Task<string> GetFormStageAsync(int formId);
         Task<string> GetFormStatusAsync(int formId);
-        Task<List<FormStatusCount>> GetFormStatusCountsAsync();
+        Task<List<FormStatusCount>> GetFormStatusCountsAsync(string stage);
         Task<List<FormDetail>> GetFormDetailsByFormIdAsync(int formId);
         Task<FormWorker> GetFormWorkerByFormIdAsync(int formId);
         Task<List<FormPayment>> GetFormPaymentInfoByFormIdAsync(int formId);

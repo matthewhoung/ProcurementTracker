@@ -6,6 +6,12 @@ namespace Application.Forms.Handlers.Queries
 {
     public class GetFormStatusCountsQuery : IRequest<List<FormStatusCount>>
     {
+        public string Stage { get; }
+
+        public GetFormStatusCountsQuery(string stage)
+        {
+            Stage = stage;
+        }
     }
 
     public class GetFormStatusCountsHandler : IRequestHandler<GetFormStatusCountsQuery, List<FormStatusCount>>
@@ -19,7 +25,7 @@ namespace Application.Forms.Handlers.Queries
 
         public async Task<List<FormStatusCount>> Handle(GetFormStatusCountsQuery request, CancellationToken cancellationToken)
         {
-            var statusCounts = await _formRepository.GetFormStatusCountsAsync();
+            var statusCounts = await _formRepository.GetFormStatusCountsAsync(request.Stage);
             return statusCounts;
         }
     }
