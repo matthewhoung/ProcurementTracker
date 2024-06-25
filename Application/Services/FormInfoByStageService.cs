@@ -25,7 +25,6 @@ namespace Application.Services
             var departments = await _formRepository.GetFormDepartmentsByFormIdAsync(formId);
             var signatures = await _formRepository.GetFormSignatureByFormIdAndStageAsync(formId, stage);
             var filePaths = await _fileUploaderRepository.GetFilePathAsync(formId);
-            var status = await _formRepository.GetFormStatusAsync(formId);
             var affiliateForms = await _formRepository.GetAllAffiliateFormsAsync(formId);
 
             var formInfoDto = new FormInfoDto
@@ -36,9 +35,9 @@ namespace Application.Services
                 ProjectName = form.ProjectName,
                 Title = form.Title,
                 Description = form.Description,
-                Stage = form.Stage,
+                Stage = stage,
                 PaymentTotal = payments.FirstOrDefault()?.PaymentTotal ?? 0,
-                Status = status,
+                Status = signatures.FirstOrDefault().Status,
                 CreatedAt = form.CreatedAt,
                 UpdatedAt = form.UpdatedAt,
                 Details = details,

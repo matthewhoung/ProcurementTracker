@@ -391,7 +391,7 @@ namespace Infrastructure.Repositories
                         AS IsDelta,
                     fp.is_taxed AS IsTaxed,
                     fp.is_receipt AS IsReceipt,
-                    f.stage AS Stage,
+                    @Stage AS Stage,
                     st.status AS Status,
                     f.created_at AS CreatedAt,
                     f.updated_at AS UpdatedAt
@@ -408,6 +408,7 @@ namespace Infrastructure.Repositories
 
             var parameters = new DynamicParameters();
             parameters.Add("Status", status);
+            parameters.Add("Stage", stage);
 
             if (userId.HasValue)
             {
@@ -647,11 +648,11 @@ namespace Infrastructure.Repositories
         }
         public async Task<List<FormSignatureMember>> GetFormSignatureByFormIdAndStageAsync(int formId, string stage)
         {
-            var table = stage switch
+            var (signatureTable, statusTable) = stage switch
             {
-                "OrderForm" => "order_signatures",
-                "ReceiveForm" => "receive_signatures",
-                "PayableForm" => "payable_signatures",
+                "OrderForm" => ("order_signatures", "forms_orderform"),
+                "ReceiveForm" => ("receive_signatures", "forms_receiveform"),
+                "PayableForm" => ("payable_signatures", "forms_payableform"),
                 _ => throw new ArgumentException("Invalid stage")
             };
 
@@ -662,18 +663,25 @@ namespace Infrastructure.Repositories
                     fsm.user_id AS UserId,
                     r.role_id AS RoleId,
                     r.role_name AS RoleName,
-                    f.stage AS Stage,
                     fsm.is_checked AS IsChecked,
-                    fsm.updated_at AS UpdateAt
+                    fsm.updated_at AS UpdateAt,
+                    st.status AS Status,
+                    @Stage AS Stage
                 FROM
                     forms f
                 JOIN
-                    {table} fsm ON f.id = fsm.form_id
+                    {signatureTable} fsm ON f.id = fsm.form_id
                 JOIN
                     forms_roles r ON fsm.role_id = r.role_id
+                JOIN
+                    {statusTable} st ON f.id = st.form_id
                 WHERE
                     f.id = @FormId";
-            var parameters = new { FormId = formId };
+            var parameters = new 
+            { 
+                FormId = formId ,
+                Stage = stage
+            };
             var formSignatureMembers = await _dbConnection.QueryAsync<FormSignatureMember>(readCommand, parameters);
             return formSignatureMembers.AsList();
         }
