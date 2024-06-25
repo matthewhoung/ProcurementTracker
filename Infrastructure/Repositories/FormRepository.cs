@@ -623,6 +623,14 @@ namespace Infrastructure.Repositories
         {
             var signatureTable = await GetFormStageAsync(formId);
 
+            var statusTable = signatureTable switch
+            {
+                "order_signatures" => "forms_orderform",
+                "receive_signatures" => "forms_receiveform",
+                "payable_signatures" => "forms_payableform",
+                _ => throw new ArgumentException("Invalid stage")
+            };
+
             var readCommand = $@"
                 SELECT
                     fsm.sign_id AS SignId,
@@ -631,12 +639,15 @@ namespace Infrastructure.Repositories
                     r.role_id AS RoleId,
                     r.role_name AS RoleName,
                     f.stage AS Stage,
+                    st.status AS Status,
                     fsm.is_checked AS IsChecked,
                     fsm.updated_at AS UpdateAt
                 FROM
                     forms f
                 JOIN
                     {signatureTable} fsm ON f.id = fsm.form_id
+                JOIN
+                    {statusTable} st ON f.id = st.form_id
                 JOIN
                     forms_roles r ON fsm.role_id = r.role_id
                 WHERE

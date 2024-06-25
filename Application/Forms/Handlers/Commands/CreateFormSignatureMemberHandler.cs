@@ -10,7 +10,6 @@ namespace Application.Forms.Handlers.Commands
         public int UserId { get; set; }
         public int RoleId { get; set; }
         public bool IsChecked { get; set; }
-        //public string Stage { get; set; }
     }
     public class CreateFormSignatureMemberHandler : IRequestHandler<CreateFormSignatureMemberCommand, int>
     {

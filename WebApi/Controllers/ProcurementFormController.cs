@@ -57,7 +57,7 @@ namespace WebApi.Controllers
          * Read section
          */
 
-        [HttpGet("get/all/forms/list")]
+        [HttpGet("get/information/list")]
         public async Task<ActionResult<List<FormInfoDto>>> GetForms([FromQuery] int? formId, [FromQuery] int? userId, [FromQuery] string? stage, [FromQuery] string? status)
         {
             try
@@ -78,7 +78,7 @@ namespace WebApi.Controllers
                 return StatusCode(500, new { message = ex.Message });
             }
         }
-
+        /*
         [HttpGet("get/allforms")]
         public async Task<IActionResult> GetAllForms()
         {
@@ -86,15 +86,9 @@ namespace WebApi.Controllers
             var forms = await _mediator.Send(query);
             return Ok(forms);
         }
-        [HttpGet("get/allforms/cover")]
-        public async Task<IActionResult> GetFormCoverData(int? userId, string stage, string status)
-        {
-            var query = new GetFormCoverDataQuery(userId, stage, status);
-            var formCoverData = await _mediator.Send(query);
-            return Ok(formCoverData);
-        }
+        */
 
-        [HttpGet("info/by/stage")]
+        [HttpGet("get/information")]
         public async Task<IActionResult> GetFormInfoByStage(int formId, string stage)
         {
             var query = new GetFormByIdStageQuery(formId, stage);
@@ -102,14 +96,23 @@ namespace WebApi.Controllers
             return Ok(formInfo);
         }
 
-        [HttpGet("get/{formid}")]
+        [HttpGet("get/information/cover")]
+        public async Task<IActionResult> GetFormCoverData(int? userId, string stage, string status)
+        {
+            var query = new GetFormCoverDataQuery(userId, stage, status);
+            var formCoverData = await _mediator.Send(query);
+            return Ok(formCoverData);
+        }
+
+        
+        [HttpGet("get/information/{formid}")]
         public async Task<IActionResult> GetFormById(int formid)
         {
             var query = new GetFormByIdQuery(formid);
             var form = await _mediator.Send(query);
             return Ok(form);
         }
-
+        /*
         [HttpGet("get/{userId}/forms")]
         public async Task<IActionResult> GetUserForms(int userId)
         {
@@ -181,7 +184,7 @@ namespace WebApi.Controllers
             var formStatus = await _mediator.Send(query);
             return Ok(formStatus);
         }
-
+        */
         [HttpGet("get/status/counts")]
         public async Task<IActionResult> GetFormStatusCounts()
         {
