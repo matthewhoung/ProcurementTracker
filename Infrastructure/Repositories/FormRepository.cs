@@ -56,12 +56,10 @@ namespace Infrastructure.Repositories
         {
             return await CreateSubFormAsync("forms_orderform", formId, 'P');
         }
-
         public async Task<int> CreateReceiveFormAsync(int formId)
         {
             return await CreateSubFormAsync("forms_receiveform", formId, 'A');
         }
-
         public async Task<int> CreatePayableFormAsync(int formId)
         {
             return await CreateSubFormAsync("forms_payableform", formId, 'R');
@@ -144,7 +142,6 @@ namespace Infrastructure.Repositories
 
             return serialNumber;
         }
-
         public async Task<int> CreateFormDetailsAsync(IEnumerable<FormDetail> formDetails)
         {
             var writeCommand = @"
@@ -365,7 +362,7 @@ namespace Infrastructure.Repositories
 
             if (form != null)
             {
-                form.SerialNumber = await GetSerialNumbersByStageAsync(formId, form.Stage);
+                form.SerialNumber = await GetSerialNumberByStageAsync(formId, form.Stage);
             }
 
             return form;
@@ -414,47 +411,26 @@ namespace Infrastructure.Repositories
             return formCoverData.AsList();
         }
 
-
-        private async Task<List<string>> GetSerialNumbersByStageAsync(int formId, string stage)
+        private async Task<string> GetSerialNumberByStageAsync(int formId, string stage)
         {
-            switch (stage)
+            string stageTable = stage switch
             {
-                case "PayableForm":
-                    return await GetSerialNumbersFromTablesAsync(formId, "forms_payableform", "forms_receiveform", "forms_orderform");
-                case "ReceivableForm":
-                    return await GetSerialNumbersFromTablesAsync(formId, "forms_receiveform", "forms_orderform");
-                case "OrderForm":
-                    return await GetSerialNumbersFromTablesAsync(formId, "forms_orderform");
-                default:
-                    throw new ArgumentException("Invalid stage");
-            }
-        }
+                "PayableForm" => "forms_payableform",
+                "ReceivableForm" => "forms_receiveform",
+                "OrderForm" => "forms_orderform",
+                _ => throw new ArgumentException("Invalid stage")
+            };
 
-        private async Task<List<string>> GetSerialNumbersFromTablesAsync(int formId, params string[] tables)
-        {
-            var serialNumbers = new List<string>();
-
-            foreach (var table in tables)
-            {
-                var query = $@"
+            var query = $@"
                 SELECT 
                     serial_number
                 FROM 
-                    {table}
+                    {stageTable}
                 WHERE 
                     form_id = @FormId";
 
-                var serialNumber = await _dbConnection.QueryFirstOrDefaultAsync<string>(query, new { FormId = formId });
-
-                if (!string.IsNullOrEmpty(serialNumber))
-                {
-                    serialNumbers.Add(serialNumber);
-                }
-            }
-
-            return serialNumbers;
+            return await _dbConnection.QueryFirstOrDefaultAsync<string>(query, new { FormId = formId });
         }
-
 
         public async Task<IEnumerable<int>> GetUserFormIdsAsync(int userId)
         {
