@@ -9,8 +9,9 @@
         public string Title { get; set; }
         public string Description { get; set; }
         public int PaymentTotal { get; set; }
-        public int isTaxed { get; set; }
-        public int isReceipt { get; set; }
+        public int IsDelta { get; set; }
+        public int IsTaxed { get; set; }
+        public int IsReceipt { get; set; }
         public string Stage { get; set; }
         public string Status { get; set; }
         public DateTime CreatedAt { get; set; }

@@ -386,6 +386,10 @@ namespace Infrastructure.Repositories
                     f.title AS Title,
                     f.description AS Description,
                     fp.payment_total AS PaymentTotal,
+                    CASE
+                        WHEN fp.payment_delta > 0 THEN 1 ELSE 0
+                    END 
+                        AS IsDelta,
                     fp.is_taxed AS IsTaxed,
                     fp.is_receipt AS IsReceipt,
                     f.stage AS Stage,
@@ -410,7 +414,6 @@ namespace Infrastructure.Repositories
             var formCoverData = await _dbConnection.QueryAsync<FormCover>(query, parameters);
             return formCoverData.AsList();
         }
-
         private async Task<string> GetSerialNumberByStageAsync(int formId, string stage)
         {
             string stageTable = stage switch
@@ -431,7 +434,6 @@ namespace Infrastructure.Repositories
 
             return await _dbConnection.QueryFirstOrDefaultAsync<string>(query, new { FormId = formId });
         }
-
         public async Task<IEnumerable<int>> GetUserFormIdsAsync(int userId)
         {
             var readCommand = @"
@@ -849,7 +851,6 @@ namespace Infrastructure.Repositories
             var parameters = new { FormId = formId };
             await _dbConnection.ExecuteAsync(updateCommand, parameters);
         }
-
         public async Task UpdateArchiveStatus(int formId, int userId)
         {
             var updateCommand = @"
