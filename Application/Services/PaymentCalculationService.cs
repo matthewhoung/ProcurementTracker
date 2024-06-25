@@ -1,5 +1,4 @@
 ﻿using Domain.Entities.Forms;
-using System;
 
 namespace Application.Services
 {
@@ -17,7 +16,7 @@ namespace Application.Services
             switch ((formPayment.IsTaxed, formPayment.IsReceipt))
             {
                 case (1, 1):
-                    taxAmount = Math.Max((paymentAmount - (int)(paymentAmount / 1.05)), (int)(paymentAmount * 0.05));
+                    taxAmount = Math.Min((paymentAmount - (int)(paymentAmount / 1.05)), (int)(paymentAmount * 0.05));
                     paymentTotal = paymentAmount;
                     break;
                 case (0, 1):
