@@ -367,7 +367,7 @@ namespace Infrastructure.Repositories
 
             return form;
         }
-        public async Task<List<FormCover>> GetFormCoverDataAsync(string stage, string status)
+        public async Task<List<FormCover>> GetFormCoverDataAsync(int? userId, string stage, string status)
         {
             string stageTable = stage switch
             {
@@ -406,11 +406,24 @@ namespace Infrastructure.Repositories
                     project p ON f.project_id = p.id
                 WHERE
                     st.status = @Status";
-            var parameters = new 
-                { 
-                    Stage = stage, 
-                    Status = status 
-                };
+
+            var parameters = new DynamicParameters();
+            parameters.Add("Status", status);
+
+            if (userId.HasValue)
+            {
+                var userFormIds = (await GetUserFormIdsAsync(userId.Value)).ToList();
+                if (userFormIds.Any())
+                {
+                    query += " AND f.id IN @UserFormIds";
+                    parameters.Add("UserFormIds", userFormIds);
+                }
+                else
+                {
+                    return new List<FormCover>();
+                }
+            }
+
             var formCoverData = await _dbConnection.QueryAsync<FormCover>(query, parameters);
             return formCoverData.AsList();
         }

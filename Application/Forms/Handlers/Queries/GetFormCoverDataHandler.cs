@@ -6,11 +6,13 @@ namespace Application.Forms.Handlers.Queries
 {
     public class GetFormCoverDataQuery : IRequest<List<FormCover>>
     {
+        public int? UserId { get; set; }
         public string Stage { get; set; }
         public string Status { get; set; }
 
-        public GetFormCoverDataQuery(string stage, string status)
+        public GetFormCoverDataQuery(int? userId, string stage, string status)
         {
+            UserId = userId;
             Stage = stage;
             Status = status;
         }
@@ -27,7 +29,7 @@ namespace Application.Forms.Handlers.Queries
 
         public async Task<List<FormCover>> Handle(GetFormCoverDataQuery request, CancellationToken cancellationToken)
         {
-            var formCoverData = await _formRepository.GetFormCoverDataAsync(request.Stage, request.Status);
+            var formCoverData = await _formRepository.GetFormCoverDataAsync(request.UserId, request.Stage, request.Status);
             return formCoverData;
         }
     }
