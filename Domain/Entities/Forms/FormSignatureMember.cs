@@ -9,5 +9,6 @@
         public string RoleName { get; set; }
         public string Stage { get; set; }
         public bool IsChecked { get; set; }
+        public DateTime UpdateAt { get; set; }
     }
 }

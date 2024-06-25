@@ -616,7 +616,8 @@ namespace Infrastructure.Repositories
                     r.role_id AS RoleId,
                     r.role_name AS RoleName,
                     f.stage AS Stage,
-                    fsm.is_checked AS IsChecked
+                    fsm.is_checked AS IsChecked,
+                    fsm.updated_at AS UpdateAt
                 FROM
                     forms f
                 JOIN
