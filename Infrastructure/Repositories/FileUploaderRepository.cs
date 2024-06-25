@@ -89,16 +89,16 @@ namespace Infrastructure.Repositories
         public async Task<List<FileUploader>> GetFilePathAsync(int formId)
         {
             var readCommand = @"
-                        SELECT
-                            form_id AS FormId,
-                            file_id AS FileId,
-                            uploader_id AS UploaderId,
-                            file_name AS FileName,
-                            file_path AS FilePath,
-                            created_at AS CreatedAt,
-                            updated_at AS UpdatedAt
-                        FROM forms_filepaths
-                        WHERE form_id = @FromId";
+                SELECT
+                    form_id AS FormId,
+                    file_id AS FileId,
+                    uploader_id AS UploaderId,
+                    file_name AS FileName,
+                    file_path AS FilePath,
+                    created_at AS CreatedAt,
+                    updated_at AS UpdatedAt
+                FROM forms_filepaths
+                WHERE form_id = @FromId";
             var parameters = new { FromId = formId };
             var filePath = await _dbConnection.QueryAsync<FileUploader>(readCommand, parameters);
             return filePath.AsList();
@@ -159,6 +159,15 @@ namespace Infrastructure.Repositories
                 ".wmv" => "video/x-ms-wmv",
                 ".flv" => "video/x-flv",
                 ".webm" => "video/webm",
+                ".pdf" => "application/pdf",
+                ".doc" => "application/msword",
+                ".docx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                ".xls" => "application/vnd.ms-excel",
+                ".xlsx" => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                ".ppt" => "application/vnd.ms-powerpoint",
+                ".pptx" => "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+                ".zip" => "application/zip",
+                ".rar" => "application/x-rar-compressed",
                 _ => "application/octet-stream"
             };
         }
