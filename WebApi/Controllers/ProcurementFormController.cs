@@ -94,6 +94,14 @@ namespace WebApi.Controllers
             return Ok(formCoverData);
         }
 
+        [HttpGet("info/by/stage")]
+        public async Task<IActionResult> GetFormInfoByStage(int formId, string stage)
+        {
+            var query = new GetFormByIdStageQuery(formId, stage);
+            var formInfo = await _mediator.Send(query);
+            return Ok(formInfo);
+        }
+
         [HttpGet("get/{formid}")]
         public async Task<IActionResult> GetFormById(int formid)
         {

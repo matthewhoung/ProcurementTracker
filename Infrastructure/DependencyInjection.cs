@@ -17,6 +17,7 @@ namespace Infrastructure
             services.AddScoped<FormInfoService>();
             services.AddScoped<FilteredFormsService>();
             services.AddScoped<PaymentCalculationService>();
+            services.AddScoped<FormInfoByStageService>();
 
             return services;
         }

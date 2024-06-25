@@ -1,5 +1,4 @@
-﻿using Application.DTOs;
-using Dapper;
+﻿using Dapper;
 using Domain.Entities.Forms;
 using Domain.Interfaces;
 using System.Data;
@@ -642,6 +641,38 @@ namespace Infrastructure.Repositories
                 WHERE
                     f.id = @FormId";
 
+            var parameters = new { FormId = formId };
+            var formSignatureMembers = await _dbConnection.QueryAsync<FormSignatureMember>(readCommand, parameters);
+            return formSignatureMembers.AsList();
+        }
+        public async Task<List<FormSignatureMember>> GetFormSignatureByFormIdAndStageAsync(int formId, string stage)
+        {
+            var table = stage switch
+            {
+                "OrderForm" => "order_signatures",
+                "ReceiveForm" => "receive_signatures",
+                "PayableForm" => "payable_signatures",
+                _ => throw new ArgumentException("Invalid stage")
+            };
+
+            var readCommand = $@"
+                SELECT
+                    fsm.sign_id AS SignId,
+                    f.id AS FormId,
+                    fsm.user_id AS UserId,
+                    r.role_id AS RoleId,
+                    r.role_name AS RoleName,
+                    f.stage AS Stage,
+                    fsm.is_checked AS IsChecked,
+                    fsm.updated_at AS UpdateAt
+                FROM
+                    forms f
+                JOIN
+                    {table} fsm ON f.id = fsm.form_id
+                JOIN
+                    forms_roles r ON fsm.role_id = r.role_id
+                WHERE
+                    f.id = @FormId";
             var parameters = new { FormId = formId };
             var formSignatureMembers = await _dbConnection.QueryAsync<FormSignatureMember>(readCommand, parameters);
             return formSignatureMembers.AsList();

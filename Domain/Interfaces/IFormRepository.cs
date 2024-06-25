@@ -40,6 +40,7 @@ namespace Domain.Interfaces
         Task<List<FormPayment>> GetFormPaymentInfoByFormIdAsync(int formId);
         Task<List<FormDepartment>> GetFormDepartmentsByFormIdAsync(int formId);
         Task<List<FormSignatureMember>> GetFormSignatureMembersByFormIdAsync(int formId);
+        Task<List<FormSignatureMember>> GetFormSignatureByFormIdAndStageAsync(int formId, string stage);
         Task<List<FormSignatureMember>> GetUnSignedMembersAsync(int formId);
         Task<bool> GetAllSignaturesCheckedAsync(int formId);    
         Task<int> GetFormDetailSumTotalAsync(int formId);
