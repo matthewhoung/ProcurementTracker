@@ -19,7 +19,7 @@ namespace Application.DTOs
         public List<FormDetail> Details { get; set; }
         public List<FormSignatureMember> Signatures { get; set; }
         public FormWorker Workers { get; set; }
-        public List<FormPayment> Payments { get; set; }
+        public FormPayment Payments { get; set; }
         public FormDepartment Departments { get; set; }
         public List<FileUploader> FilePaths { get; set; }
         public List<FormAffiliateDto> Affiliates { get; set; }

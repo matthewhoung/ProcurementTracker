@@ -36,7 +36,7 @@ namespace Domain.Interfaces
         Task<List<FormStatusCount>> GetFormStatusCountsAsync(string stage);
         Task<List<FormDetail>> GetFormDetailsByFormIdAsync(int formId);
         Task<FormWorker> GetFormWorkerByFormIdAsync(int formId);
-        Task<List<FormPayment>> GetFormPaymentInfoByFormIdAsync(int formId);
+        Task<FormPayment> GetFormPaymentInfoByFormIdAsync(int formId);
         Task<FormDepartment> GetFormDepartmentsByFormIdAsync(int formId);
         Task<List<FormSignatureMember>> GetFormSignatureMembersByFormIdAsync(int formId);
         Task<List<FormSignatureMember>> GetFormSignatureByFormIdAndStageAsync(int formId, string stage);

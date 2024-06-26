@@ -566,7 +566,7 @@ namespace Infrastructure.Repositories
             var formWorker = await _dbConnection.QueryFirstOrDefaultAsync<FormWorker>(readCommand, parameters);
             return formWorker;
         }
-        public async Task<List<FormPayment>> GetFormPaymentInfoByFormIdAsync(int formId)
+        public async Task<FormPayment> GetFormPaymentInfoByFormIdAsync(int formId)
         {
             var readCommand = @"
                 SELECT
@@ -596,8 +596,8 @@ namespace Infrastructure.Repositories
                 WHERE
                     f.id = @FormId";
             var parameters = new { FormId = formId };
-            var formPayments = await _dbConnection.QueryAsync<FormPayment>(readCommand, parameters);
-            return formPayments.AsList();
+            var formPayment = await _dbConnection.QuerySingleOrDefaultAsync<FormPayment>(readCommand, parameters);
+            return formPayment;
         }
         public async Task<FormDepartment> GetFormDepartmentsByFormIdAsync(int formId)
         {
@@ -619,7 +619,6 @@ namespace Infrastructure.Repositories
             var formDepartment = await _dbConnection.QuerySingleOrDefaultAsync<FormDepartment>(readCommand, parameters);
             return formDepartment;
         }
-
         public async Task<List<FormSignatureMember>> GetFormSignatureMembersByFormIdAsync(int formId)
         {
             var signatureTable = await GetFormStageAsync(formId);
@@ -787,7 +786,6 @@ namespace Infrastructure.Repositories
             var formStatusCounts = await _dbConnection.QueryAsync<FormStatusCount>(query);
             return formStatusCounts.AsList();
         }
-
         public async Task<IEnumerable<FormAffiliate>> GetAllAffiliateFormsAsync(int formId)
         {
             var readCommand = @"
