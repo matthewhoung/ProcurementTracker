@@ -13,7 +13,7 @@ namespace Application.Forms.Handlers.Commands
         public string Title { get; set; }
         public string Description { get; set; }
         public List<FormDetailDto> FormDetails { get; set; }
-        public List<FormWorkerDto> FormWorkers { get; set; }
+        public FormWorkerDto FormWorker { get; set; }
         public List<FormDepartmentDto> FormDepartments { get; set; }
         public FormPaymentDto PaymentInfo { get; set; }
         public List<FormSignatureMemberDto> FormSignatureMembers { get; set; }
@@ -101,18 +101,18 @@ namespace Application.Forms.Handlers.Commands
 
                     //Workers
 
-                    if (request.FormWorkers != null && request.FormWorkers.Any())
+                    if (request.FormWorker != null)
                     {
-                        var formWorkers = request.FormWorkers.Select(w => new FormWorker
+                        var formWorker = new FormWorker
                         {
                             FormId = formId,
-                            WorkerTypeId = w.WorkerTypeId,
-                            WorkerTeamId = w.WorkerTeamId
-                        }).ToList();
+                            WorkerTypeId = request.FormWorker.WorkerTypeId,
+                            WorkerTeamId = request.FormWorker.WorkerTeamId
+                        };
 
-                        await _formRepository.CreateFormWorkersAsync(formWorkers);
+                        await _formRepository.CreateFormWorkerAsync(formWorker);
                     }
-                    
+
                     //Department
                     if (request.FormDepartments != null && request.FormDepartments.Any())
                     {

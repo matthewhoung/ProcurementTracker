@@ -18,7 +18,7 @@ namespace Domain.Interfaces
         Task<int> CreateFormDetailsAsync(IEnumerable<FormDetail> formDetails);
         Task<int> CreateFormSignatureMemberAsync(FormSignatureMember formSignatureMember);
         Task<int> CreateDefaultSignatureMembersAsync(IEnumerable<FormSignatureMember> formSignatureMembers);
-        Task<int> CreateFormWorkersAsync(IEnumerable<FormWorker> formWorkers);
+        Task<int> CreateFormWorkerAsync(FormWorker formWorker);
         Task<int> CreateFormPaymentInfoAsync(FormPayment formPaymentInfo);
         Task<int> CreateFormDepartmentsAsync(IEnumerable<FormDepartment> formDepartments);
         Task<int> CreateOrderFormAsync(int formId);

@@ -225,23 +225,23 @@ namespace Infrastructure.Repositories
             var affectedRows = await _dbConnection.ExecuteAsync(writeCommand, formSignatureMembers);
             return affectedRows;
         }
-        public async Task<int> CreateFormWorkersAsync(IEnumerable<FormWorker> formWorkers)
+        public async Task<int> CreateFormWorkerAsync(FormWorker formWorker)
         {
             var writeCommand = @"
-                INSERT INTO forms_worker
-                (
-                    form_id,
-                    worker_type_id,
-                    worker_team_id
-                )
-                VALUES
-                (
-                    @FormId,
-                    @WorkerTypeId,
-                    @WorkerTeamId
-                );";
+            INSERT INTO forms_worker
+            (
+                form_id,
+                worker_type_id,
+                worker_team_id
+            )
+            VALUES
+            (
+                @FormId,
+                @WorkerTypeId,
+                @WorkerTeamId
+            );";
 
-            var affectedRows = await _dbConnection.ExecuteAsync(writeCommand, formWorkers);
+            var affectedRows = await _dbConnection.ExecuteAsync(writeCommand, formWorker);
             return affectedRows;
         }
         public async Task<int> CreateFormPaymentInfoAsync(FormPayment formPaymentInfo)
