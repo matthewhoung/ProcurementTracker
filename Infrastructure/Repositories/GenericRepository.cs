@@ -194,17 +194,20 @@ namespace Infrastructure.Repositories
         {
             var readCommand = @"
                 SELECT 
-                    worker_team_id AS WorkerTeamId,
-                    worker_type_id AS WorkerTypeId,
-                    worker_team_name AS WorkerTeamName,
-                    worker_contact_name AS ContactName,
-                    worker_contact_number AS ContactNumber,
-                    worker_contact_address AS ContactAddress,
-                    worker_account_code AS AccountCode,
-                    worker_account_name AS AccountName,
-                    worker_account_number AS AccountNumber
+                    wt.worker_team_id AS WorkerTeamId,
+                    wt.worker_type_id AS WorkerTypeId,
+                    wtt.worker_type_name AS WorkerTypeName,
+                    wt.worker_team_name AS WorkerTeamName,
+                    wt.worker_contact_name AS ContactName,
+                    wt.worker_contact_number AS ContactNumber,
+                    wt.worker_contact_address AS ContactAddress,
+                    wt.worker_account_code AS AccountCode,
+                    wt.worker_account_name AS AccountName,
+                    wt.worker_account_number AS AccountNumber
                 FROM 
-                    worker_teams";
+                    worker_teams wt
+                JOIN
+                    worker_types wtt ON wt.worker_type_id = wtt.worker_type_id";
             var workerTeams = await _dbConnection.QueryAsync<WorkerTeam>(readCommand);
             return workerTeams.AsList();
         }

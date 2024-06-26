@@ -4,15 +4,6 @@ namespace Domain.Interfaces
 {
     public interface IFormRepository
     {
-        /*
-         * 
-         * Forms新增廢棄狀態as "archived"
-         * 
-         * 新增細項簽核通過 => 人員才能簽核
-         * 
-         * Modify UpdatePaymentHandler.cs
-         */
-
         // Create section
         Task<int> CreateFormAsync(Form form);
         Task<int> CreateFormDetailsAsync(IEnumerable<FormDetail> formDetails);

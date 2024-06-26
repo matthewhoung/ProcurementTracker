@@ -4,6 +4,7 @@
     {
         public int WorkerTeamId { get; set; }
         public int WorkerTypeId { get; set; }
+        public string WorkerTypeName { get; set; }
         public string WorkerTeamName { get; set; }
         public string ContactName { get; set; }
         public string ContactNumber { get; set; }
