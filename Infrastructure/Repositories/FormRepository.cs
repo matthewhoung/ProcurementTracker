@@ -276,7 +276,7 @@ namespace Infrastructure.Repositories
             var payId = await _dbConnection.ExecuteScalarAsync<int>(writeCommand, formPaymentInfo);
             return payId;
         }
-        public async Task<int> CreateFormDepartmentsAsync(IEnumerable<FormDepartment> formDepartments)
+        public async Task<int> CreateFormDepartmentAsync(FormDepartment formDepartment)
         {
             var writeCommand = @"
             INSERT INTO forms_department
@@ -290,7 +290,7 @@ namespace Infrastructure.Repositories
                 @DepartmentId
             );";
 
-            var affectedRows = await _dbConnection.ExecuteAsync(writeCommand, formDepartments);
+            var affectedRows = await _dbConnection.ExecuteAsync(writeCommand, formDepartment);
             return affectedRows;
         }
         public async Task<int> CreateAffiliateFormAsync(int formId, int affiliateFormId)
@@ -599,7 +599,7 @@ namespace Infrastructure.Repositories
             var formPayments = await _dbConnection.QueryAsync<FormPayment>(readCommand, parameters);
             return formPayments.AsList();
         }
-        public async Task<List<FormDepartment>> GetFormDepartmentsByFormIdAsync(int formId)
+        public async Task<FormDepartment> GetFormDepartmentsByFormIdAsync(int formId)
         {
             var readCommand = @"
                 SELECT
@@ -616,9 +616,10 @@ namespace Infrastructure.Repositories
                 WHERE
                     f.id = @FormId";
             var parameters = new { FormId = formId };
-            var formDepartments = await _dbConnection.QueryAsync<FormDepartment>(readCommand, parameters);
-            return formDepartments.AsList();
+            var formDepartment = await _dbConnection.QuerySingleOrDefaultAsync<FormDepartment>(readCommand, parameters);
+            return formDepartment;
         }
+
         public async Task<List<FormSignatureMember>> GetFormSignatureMembersByFormIdAsync(int formId)
         {
             var signatureTable = await GetFormStageAsync(formId);

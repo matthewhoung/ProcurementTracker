@@ -4,7 +4,7 @@ using MediatR;
 
 namespace Application.Forms.Handlers.Queries
 {
-    public class GetFormDepartmentByFormIdQuery : IRequest<List<FormDepartment>>
+    public class GetFormDepartmentByFormIdQuery : IRequest<FormDepartment>
     {
         public int FormId { get; set; }
 
@@ -13,7 +13,7 @@ namespace Application.Forms.Handlers.Queries
             FormId = formId;
         }
     }
-    public class GetFormDepartmentByFormIdHandler : IRequestHandler<GetFormDepartmentByFormIdQuery, List<FormDepartment>>
+    public class GetFormDepartmentByFormIdHandler : IRequestHandler<GetFormDepartmentByFormIdQuery, FormDepartment>
     {
         private readonly IFormRepository _formRepository;
 
@@ -22,7 +22,7 @@ namespace Application.Forms.Handlers.Queries
             _formRepository = formRepository;
         }
 
-        public async Task<List<FormDepartment>> Handle(GetFormDepartmentByFormIdQuery request, CancellationToken cancellationToken)
+        public async Task<FormDepartment> Handle(GetFormDepartmentByFormIdQuery request, CancellationToken cancellationToken)
         {
             return await _formRepository.GetFormDepartmentsByFormIdAsync(request.FormId);
         }

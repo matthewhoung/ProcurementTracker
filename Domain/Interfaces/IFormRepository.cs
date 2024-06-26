@@ -20,7 +20,7 @@ namespace Domain.Interfaces
         Task<int> CreateDefaultSignatureMembersAsync(IEnumerable<FormSignatureMember> formSignatureMembers);
         Task<int> CreateFormWorkerAsync(FormWorker formWorker);
         Task<int> CreateFormPaymentInfoAsync(FormPayment formPaymentInfo);
-        Task<int> CreateFormDepartmentsAsync(IEnumerable<FormDepartment> formDepartments);
+        Task<int> CreateFormDepartmentAsync(FormDepartment formDepartment);
         Task<int> CreateOrderFormAsync(int formId);
         Task<int> CreateReceiveFormAsync(int formId);
         Task<int> CreatePayableFormAsync(int formId);
@@ -37,7 +37,7 @@ namespace Domain.Interfaces
         Task<List<FormDetail>> GetFormDetailsByFormIdAsync(int formId);
         Task<FormWorker> GetFormWorkerByFormIdAsync(int formId);
         Task<List<FormPayment>> GetFormPaymentInfoByFormIdAsync(int formId);
-        Task<List<FormDepartment>> GetFormDepartmentsByFormIdAsync(int formId);
+        Task<FormDepartment> GetFormDepartmentsByFormIdAsync(int formId);
         Task<List<FormSignatureMember>> GetFormSignatureMembersByFormIdAsync(int formId);
         Task<List<FormSignatureMember>> GetFormSignatureByFormIdAndStageAsync(int formId, string stage);
         Task<List<FormSignatureMember>> GetUnSignedMembersAsync(int formId);

@@ -14,7 +14,7 @@ namespace Application.Forms.Handlers.Commands
         public string Description { get; set; }
         public List<FormDetailDto> FormDetails { get; set; }
         public FormWorkerDto FormWorker { get; set; }
-        public List<FormDepartmentDto> FormDepartments { get; set; }
+        public FormDepartmentDto FormDepartment { get; set; }
         public FormPaymentDto PaymentInfo { get; set; }
         public List<FormSignatureMemberDto> FormSignatureMembers { get; set; }
     }
@@ -114,15 +114,15 @@ namespace Application.Forms.Handlers.Commands
                     }
 
                     //Department
-                    if (request.FormDepartments != null && request.FormDepartments.Any())
+                    if (request.FormDepartment != null)
                     {
-                        var formDepartments = request.FormDepartments.Select(d => new FormDepartment
+                        var formDepartment = new FormDepartment
                         {
                             FormId = formId,
-                            DepartmentId = d.DepartmentId
-                        }).ToList();
+                            DepartmentId = request.FormDepartment.DepartmentId
+                        };
 
-                        await _formRepository.CreateFormDepartmentsAsync(formDepartments);
+                        await _formRepository.CreateFormDepartmentAsync(formDepartment);
                     }
 
                     //SignatureMembers
