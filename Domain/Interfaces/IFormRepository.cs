@@ -5,7 +5,6 @@ namespace Domain.Interfaces
     public interface IFormRepository
     {
         /*
-         * 新增封面API
          * 
          * Forms新增廢棄狀態as "archived"
          * 

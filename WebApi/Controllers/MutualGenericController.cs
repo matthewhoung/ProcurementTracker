@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers
 {
-    [Route("mutual")]
+    [Route("api/mutual")]
     [ApiController]
     public class MutualGenericController : ControllerBase
     {
