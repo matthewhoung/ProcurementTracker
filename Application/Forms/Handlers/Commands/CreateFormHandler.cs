@@ -84,18 +84,19 @@ namespace Application.Forms.Handlers.Commands
                         var formPaymentInfo = new FormPayment
                         {
                             FormId = formId,
-                            PaymentTitleId = request.PaymentInfo.PaymentTitleId,
+                            PaymentTitleId = 3,
                             PaymentToolId = request.PaymentInfo.PaymentToolId,
                             IsTaxed = request.PaymentInfo.IsTaxed,
                             IsReceipt = request.PaymentInfo.IsReceipt,
-                            PaymentAmount = totalPaymentAmount,
+                            IsDelta = request.PaymentInfo.IsDelta,
+                            PaymentAmount = request.PaymentInfo.PaymentAmount,
                             PaymentDelta = request.PaymentInfo.PaymentDelta,
+                            PaymentTotal = request.PaymentInfo.PaymentTotal,
                             DeltaTitleId = 5,
-                            TaxAmount = 0,
-                            PaymentTotal = 0
+                            TaxAmount = request.PaymentInfo.TaxAmount
                         };
 
-                        _paymentCalculationService.CalculatePayment(formPaymentInfo);
+                        //_paymentCalculationService.CalculatePayment(formPaymentInfo);
                         await _formRepository.CreateFormPaymentInfoAsync(formPaymentInfo);
                     }
 

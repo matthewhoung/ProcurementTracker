@@ -250,28 +250,31 @@ namespace Infrastructure.Repositories
                 INSERT INTO forms_payment
                 (
                     form_id,
-                    payment_total,
+                    payment_amount,
                     payment_delta,
+                    payment_total,
+                    tax_amount,
+                    payment_tool_id,
+                    payment_title_id,
                     delta_title_id,
                     is_taxed,
-                    tax_amount,
                     is_receipt,
-                    payment_amount,
-                    payment_title_id,
-                    payment_tool_id
+                    is_delta
                 )
                 VALUES
                 (
                     @FormId,
-                    @PaymentTotal,
+                    @PaymentAmount,
                     @PaymentDelta,
+                    @PaymentTotal,
+                    @TaxAmount,
+                    @PaymentToolId,
+                    @PaymentTitleId,
                     @DeltaTitleId,
                     @IsTaxed,
-                    @TaxAmount,
                     @IsReceipt,
-                    @PaymentAmount,
-                    @PaymentTitleId,
-                    @PaymentToolId
+                    @IsDelta
+                        
                 );";
             var payId = await _dbConnection.ExecuteScalarAsync<int>(writeCommand, formPaymentInfo);
             return payId;
